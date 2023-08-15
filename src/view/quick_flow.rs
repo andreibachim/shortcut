@@ -39,8 +39,14 @@ mod imp {
             let sender = OnceCell::new();
 
             let navbar = gtk::CenterBox::new();
-            let back_button = gtk::Button::new();
-            let save_button = gtk::Button::new();
+            let back_button = gtk::Button::builder()
+                // .css_classes(vec!["flat"])
+                .label("Back")
+                .build();
+            let save_button = gtk::Button::builder()
+                .css_classes(vec!["suggested-action"])
+                .label("Save")
+                .build();
             config_navbar(&navbar, &back_button, &save_button);
 
             let preview = gtk::Box::builder().build();
@@ -85,21 +91,6 @@ mod imp {
         back_button: &gtk::Button,
         save_button: &gtk::Button,
     ) {
-        let back_button_content = adw::ButtonContent::builder()
-            .icon_name("go-previous-symbolic")
-            .label("Cancel")
-            .build();
-        back_button.set_child(Some(&back_button_content));
-
-        let save_button_content = adw::ButtonContent::builder()
-            .icon_name("document-save-symbolic")
-            .label("Save")
-            .build();
-        save_button_content.set_direction(gtk::TextDirection::Rtl);
-        save_button.set_css_classes(&["suggested-action"]);
-        // save_button.set_sensitive(false);
-        save_button.set_child(Some(&save_button_content));
-
         navbar.set_css_classes(&["toolbar", "osd"]);
         navbar.set_margin_bottom(16);
         navbar.set_margin_start(32);

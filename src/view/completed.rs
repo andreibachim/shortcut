@@ -71,23 +71,12 @@ mod imp {
             .build();
 
         main_menu_button.set_css_classes(&["pill", "suggested-action"]);
-        main_menu_button.set_child(Some(
-            &adw::ButtonContent::builder()
-                .halign(gtk::Align::Center)
-                .icon_name("object-rotate-left-symbolic")
-                .label("Menu")
-                .build(),
-        ));
+        main_menu_button.set_label("Menu");
+
         wrapper.append(main_menu_button);
 
         exit_button.set_css_classes(&["pill"]);
-        exit_button.set_child(Some(
-            &adw::ButtonContent::builder()
-                .halign(gtk::Align::Center)
-                .icon_name("application-exit-symbolic")
-                .label("Exit")
-                .build(),
-        ));
+        exit_button.set_label("Quit");
         wrapper.append(exit_button);
 
         container.append(&wrapper);

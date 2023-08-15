@@ -35,24 +35,13 @@ mod imp {
 
             let quick_flow_button = gtk::Button::builder()
                 .css_classes(vec!["suggested-action", "pill"])
-                .child(
-                    &adw::ButtonContent::builder()
-                        .icon_name("document-new-symbolic")
-                        .label("Quick flow")
-                        .halign(gtk::Align::Center)
-                        .build(),
-                )
+                .label("Quick flow")
                 .build();
 
-            let complex_flow_button = gtk::Button::builder()
+            let expert_flow_button = gtk::Button::builder()
                 .css_classes(vec!["pill"])
-                .child(
-                    &adw::ButtonContent::builder()
-                        .icon_name("org.gnome.tweaks-symbolic")
-                        .label("Expert flow")
-                        .halign(gtk::Align::Center)
-                        .build(),
-                )
+                .sensitive(false)
+                .label("Expert flow")
                 .build();
 
             let menu = gtk::Box::builder()
@@ -60,7 +49,7 @@ mod imp {
                 .spacing(16)
                 .build();
             menu.append(&quick_flow_button);
-            menu.append(&complex_flow_button);
+            menu.append(&expert_flow_button);
 
             menu_clamp.set_child(Some(&menu));
             container.append(&menu_clamp);
@@ -83,7 +72,7 @@ mod imp {
             .valign(gtk::Align::End)
             .build();
         let logo_image = gtk::Image::builder()
-            .resource("/com/github/andreibachim/Shortcut/com.github.andreibachim.Shortcut.svg")
+            .resource("/com/github/andreibachim/shortcut/com.github.andreibachim.shortcut.svg")
             .pixel_size(128)
             .build();
         let logo_subtitle = gtk::Label::builder()
