@@ -72,7 +72,7 @@ mod imp {
             .valign(gtk::Align::End)
             .build();
         let logo_image = gtk::Image::builder()
-            .resource("/com/github/andreibachim/shortcut/com.github.andreibachim.shortcut.svg")
+            .icon_name("com.github.andreibachim.shortcut")
             .pixel_size(128)
             .build();
         let logo_subtitle = gtk::Label::builder()
