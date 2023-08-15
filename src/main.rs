@@ -3,8 +3,8 @@ mod model;
 mod view;
 
 use gtk::{
-    prelude::{ApplicationExt, ApplicationExtManual},
-    traits::{BoxExt, GtkWindowExt},
+    prelude::{ActionMapExtManual, ApplicationExt, ApplicationExtManual},
+    traits::{BoxExt, GtkApplicationExt, GtkWindowExt},
 };
 
 const APP_ID: &str = "com.github.andreibachim.shortcut";
@@ -14,6 +14,26 @@ fn main() -> gtk::glib::ExitCode {
 
     let app = adw::Application::builder().application_id(APP_ID).build();
     app.connect_activate(build_window);
+
+    let about = gtk::gio::ActionEntry::builder("about")
+        .activate(|app: &adw::Application, _, _| {
+            let window = app.active_window().unwrap();
+            adw::AboutWindow::builder()
+                .application_name("Shortcut")
+                .application_icon(APP_ID)
+                .website("https://github.com/andreibachim/shortcut")
+                .issue_url("https://github.com/andreibachim/shortcut/issues")
+                .version("0.1.0")
+                .license_type(gtk::License::Gpl30)
+                .modal(true)
+                .transient_for(&window)
+                .build()
+                .present()
+        })
+        .build();
+
+    app.add_action_entries([about]);
+    app.set_accels_for_action("app.about", &["<Control>q"]);
     app.run()
 }
 
@@ -35,6 +55,20 @@ fn build_content() -> impl gtk::prelude::IsA<gtk::Widget> {
 
     let headerbar = adw::HeaderBar::builder().build();
     content.append(&headerbar);
+
+    let menu = gtk::gio::Menu::new();
+    let about_item = gtk::gio::MenuItem::new(Some("About Shortcut"), Some("app.about"));
+    menu.append_item(&about_item);
+
+    let menu_button = gtk::MenuButton::builder()
+        .tooltip_text("Menu")
+        .menu_model(&menu)
+        .hexpand(true)
+        .halign(gtk::Align::End)
+        .icon_name("open-menu-symbolic")
+        .build();
+
+    headerbar.set_title_widget(Some(&menu_button));
 
     let viewport = component::Viewport::new();
     content.append(&viewport);
