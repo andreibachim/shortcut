@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/andreibachim/Shortcut/">
+    <file preprocess="xml-stripblanks">com.github.andreibachim.Shortcut.svg</file>
+  </gresource>
+</gresources>
