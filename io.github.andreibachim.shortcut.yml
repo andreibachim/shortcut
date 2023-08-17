@@ -1,0 +1,23 @@
+app-id: io.github.andreibachim.shortcut
+runtime: org.gnome.Platform
+runtime-version: '44'
+sdk: org.gnome.Sdk
+command: shortcut
+finish-args: [
+  '--socket=wayland',
+  '--socket=fallback-x11',
+  '--device=dri',
+  '--filesystem=home:ro',
+  '--filesystem=~/.local/share/applications',
+]
+modules:
+  - name: shortcut
+    buildsystem: simple
+    build-commands:
+      - install -D ./target/release/shortcut /app/bin/shortcut
+      - install -D data/io.github.andreibachim.shortcut.svg /app/share/icons/hicolor/scalable/apps/io.github.andreibachim.shortcut.svg
+      - install -D data/io.github.andreibachim.shortcut.desktop /app/share/applications/io.github.andreibachim.shortcut.desktop
+      - install -D data/io.github.andreibachim.shortcut.metainfo.xml /app/share/metainfo/io.github.andreibachim.shortcut.appdata.xml
+    sources:
+      - type: dir
+        path: .

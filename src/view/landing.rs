@@ -30,7 +30,7 @@ mod imp {
 
             let menu_clamp = adw::Clamp::builder()
                 .orientation(gtk::Orientation::Horizontal)
-                .maximum_size(320)
+                .maximum_size(240)
                 .build();
 
             let quick_flow_button = gtk::Button::builder()
@@ -40,6 +40,7 @@ mod imp {
 
             let expert_flow_button = gtk::Button::builder()
                 .css_classes(vec!["pill"])
+                .visible(false)
                 .sensitive(false)
                 .label("Expert flow")
                 .build();
@@ -72,13 +73,13 @@ mod imp {
             .valign(gtk::Align::End)
             .build();
         let logo_image = gtk::Image::builder()
-            .icon_name("com.github.andreibachim.shortcut")
+            .icon_name("io.github.andreibachim.shortcut")
             .pixel_size(128)
             .build();
         let logo_subtitle = gtk::Label::builder()
             .css_classes(vec!["dim-label"])
             .use_markup(true)
-            .label("Create desktop files <i>blazingly</i> fast")
+            .label("Make .desktop files")
             .build();
         logo.append(&logo_image);
         logo.append(&logo_subtitle);
