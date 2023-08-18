@@ -6,9 +6,9 @@ command: shortcut
 finish-args: [
   '--socket=wayland',
   '--socket=fallback-x11',
+  '--share=ipc',
   '--device=dri',
-  '--filesystem=home:ro',
-  '--filesystem=~/.local/share/applications',
+  "--filesystem=host",
 ]
 modules:
   - name: shortcut

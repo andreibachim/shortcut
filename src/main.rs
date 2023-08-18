@@ -48,6 +48,8 @@ fn set_up_headerbar(content: &gtk::Box) {
     let headerbar = adw::HeaderBar::builder().build();
 
     let menu = gtk::gio::Menu::new();
+    let shortcuts_item = gtk::gio::MenuItem::new(Some("Keyboard shortcuts"), Some("app.shortcuts"));
+    menu.append_item(&shortcuts_item);
     let about_item = gtk::gio::MenuItem::new(Some("About Shortcut"), Some("app.about"));
     menu.append_item(&about_item);
 
@@ -76,6 +78,10 @@ fn set_up_headerbar(content: &gtk::Box) {
 }
 
 fn set_up_actions(app: &adw::Application) {
+    let quit = gtk::gio::ActionEntry::builder("quit")
+        .activate(|app: &adw::Application, _, _| app.quit())
+        .build();
+
     let about = gtk::gio::ActionEntry::builder("about")
         .activate(|app: &adw::Application, _, _| {
             let window = app.active_window().unwrap();
@@ -90,21 +96,23 @@ fn set_up_actions(app: &adw::Application) {
                 .modal(true)
                 .transient_for(&window)
                 .build()
-                .present()
+                .present();
         })
         .build();
 
     let keyboard_shortcuts = gtk::gio::ActionEntry::builder("shortcuts")
         .activate(|app: &adw::Application, _, _| {
-            gtk::ShortcutsWindow::builder()
-                .application(app)
-                .modal(true)
-                .transient_for(&app.active_window().unwrap())
-                .build()
-                .present()
+            let shortcut_window: gtk::ShortcutsWindow = gtk::Builder::from_resource(
+                "/io/github/andreibachim/shortcut/ui/keyboard-shortcuts.ui",
+            )
+            .object("keyboard_shortcuts")
+            .unwrap();
+            shortcut_window.set_transient_for(app.active_window().as_ref());
+            shortcut_window.present();
         })
         .build();
 
-    app.set_accels_for_action("app.shortcuts", &["<Control>q"]);
-    app.add_action_entries([keyboard_shortcuts, about]);
+    app.set_accels_for_action("app.shortcuts", &["<ctrl>question"]);
+    app.set_accels_for_action("app.quit", &["<ctrl>Q"]);
+    app.add_action_entries([quit, keyboard_shortcuts, about]);
 }
