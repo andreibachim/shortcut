@@ -34,15 +34,25 @@ mod imp {
                 .build();
 
             let quick_flow_button = gtk::Button::builder()
-                .css_classes(vec!["suggested-action", "pill"])
-                .label("Quick flow")
+                .css_classes(vec!["suggested-action"])
+                .child(
+                    &gtk::Label::builder()
+                        .margin_top(8)
+                        .margin_bottom(8)
+                        .label("Quick flow")
+                        .build(),
+                )
                 .build();
 
             let expert_flow_button = gtk::Button::builder()
-                .css_classes(vec!["pill"])
+                .child(
+                    &gtk::Label::builder()
+                        .margin_top(8)
+                        .margin_bottom(8)
+                        .label("Expert flow")
+                        .build(),
+                )
                 .visible(false)
-                .sensitive(false)
-                .label("Expert flow")
                 .build();
 
             let menu = gtk::Box::builder()
