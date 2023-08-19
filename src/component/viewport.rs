@@ -4,8 +4,7 @@ mod imp {
     use adw::{subclass::prelude::*, traits::BinExt};
     use gtk::{
         glib::{self, clone},
-        prelude::{CastNone, StaticType},
-        traits::{ButtonExt, GtkWindowExt, WidgetExt},
+        traits::{WidgetExt, ButtonExt},
     };
 
     use super::Action;
@@ -65,10 +64,6 @@ mod imp {
                             carousel.reorder(&confirmation, (carousel.position() + 1.0) as i32);
                             carousel.scroll_to(&confirmation, true);
                         },
-                        Action::Exit => {
-                            let window: adw::ApplicationWindow = carousel.ancestor(adw::ApplicationWindow::static_type()).and_downcast().unwrap();
-                            window.destroy();
-                        }
                         Action::ShowToast(toast) => {
 
                             let close_button = gtk::Button::builder()
@@ -181,6 +176,5 @@ pub enum Action {
     Landing(bool),
     QuickFlow,
     Completed,
-    Exit,
     ShowToast(String),
 }
