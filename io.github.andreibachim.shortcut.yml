@@ -21,4 +21,4 @@ modules:
     sources:
       - type: archive
         url: https://github.com/andreibachim/shortcut/releases/download/v0.1.0-alpha/v0.1.0.zip
-        sha512: d03df6da3bba6eda156f3a9d60d3277d9468807be6bc984930a7b73c7854528864c8d9c2179405119ffea3356cce237bcc74464dcecce78af671466dacb2f480
+        sha512: b46310ba3dbb499dca14e26e60f5068ff43ec407fce49318e5d9310f691221d8d0237025a24bf1ea7712cd618acbd1e830f132875ec74e8d00ba690e5da5c046
