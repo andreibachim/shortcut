@@ -90,7 +90,7 @@ fn set_up_actions(app: &adw::Application) {
                 .application_icon(APP_ID)
                 .website("https://github.com/andreibachim/shortcut")
                 .issue_url("https://github.com/andreibachim/shortcut/issues")
-                .version("0.1.1")
+                .version("0.1.0")
                 .developers(["Andrei Achim <andreiachim@duck.com>"])
                 .license_type(gtk::License::Gpl30)
                 .modal(true)
