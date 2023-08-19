@@ -5,7 +5,7 @@ mod imp {
     use adw::traits::BinExt;
     use gtk::glib::{self, Sender};
     use gtk::subclass::prelude::*;
-    use gtk::traits::BoxExt;
+    use gtk::traits::{BoxExt, WidgetExt};
     use std::cell::OnceCell;
 
     pub struct Landing {
@@ -33,15 +33,12 @@ mod imp {
                 .maximum_size(240)
                 .build();
 
+            let quick_mode_label = gtk::Label::with_mnemonic("_Quick mode");
+            quick_mode_label.set_margin_top(8);
+            quick_mode_label.set_margin_bottom(8);
             let quick_flow_button = gtk::Button::builder()
                 .css_classes(vec!["suggested-action"])
-                .child(
-                    &gtk::Label::builder()
-                        .margin_top(8)
-                        .margin_bottom(8)
-                        .label("Quick flow")
-                        .build(),
-                )
+                .child(&quick_mode_label)
                 .build();
 
             let expert_flow_button = gtk::Button::builder()
@@ -87,7 +84,7 @@ mod imp {
             .pixel_size(128)
             .build();
         let logo_subtitle = gtk::Label::builder()
-            .css_classes(vec!["dim-label"])
+            .css_classes(vec!["dim-label", "title-4"])
             .use_markup(true)
             .label("Make .desktop files")
             .build();
@@ -136,6 +133,7 @@ impl Landing {
             .build();
         let landing = slf.imp();
         landing.sender.set(sender).unwrap();
+
         landing
             .quick_flow_button
             .connect_clicked(clone!(@weak landing => move |_| {
