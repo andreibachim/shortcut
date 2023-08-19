@@ -4,8 +4,7 @@ mod imp {
     use adw::{subclass::prelude::*, traits::BinExt};
     use gtk::{
         glib::{self, clone},
-        prelude::{CastNone, StaticType},
-        traits::{ButtonExt, GtkWindowExt, WidgetExt},
+        traits::{WidgetExt, ButtonExt},
     };
 
     use super::Action;
@@ -30,32 +29,41 @@ mod imp {
 
             let landing_view = crate::view::Landing::new(sender.clone());
             carousel.append(&landing_view);
-
+            
             let quick_flow_view = crate::view::QuickFlow::new(sender.clone());
+            quick_flow_view.set_sensitive(false);
             carousel.append(&quick_flow_view);
-
+            
             let confirmation = crate::view::Completed::new(sender.clone());
+            confirmation.set_sensitive(false);
             carousel.append(&confirmation);
 
             receiver.borrow_mut().take().unwrap().attach(
                 None,
                 clone!(@strong carousel, @strong toast_overlay => move |action| {
+                    let disable_all_children = || {
+                        for view_index in 0..carousel.n_pages() {
+                            carousel.nth_page(view_index).set_sensitive(false);
+                        }
+                    };
                     match action {
                         Action::Landing(scroll) => {
+                            disable_all_children();
+                            landing_view.set_sensitive(true);
                             carousel.scroll_to(&landing_view, scroll);
                         },
                         Action::QuickFlow => {
+                            disable_all_children();
+                            quick_flow_view.set_sensitive(true);
                             carousel.reorder(&quick_flow_view, 1);
                             carousel.scroll_to(&quick_flow_view, true);
                         },
                         Action::Completed => {
+                            disable_all_children();
+                            confirmation.set_sensitive(true);
                             carousel.reorder(&confirmation, (carousel.position() + 1.0) as i32);
                             carousel.scroll_to(&confirmation, true);
                         },
-                        Action::Exit => {
-                            let window: adw::ApplicationWindow = carousel.ancestor(adw::ApplicationWindow::static_type()).and_downcast().unwrap();
-                            window.destroy();
-                        }
                         Action::ShowToast(toast) => {
 
                             let close_button = gtk::Button::builder()
@@ -168,6 +176,5 @@ pub enum Action {
     Landing(bool),
     QuickFlow,
     Completed,
-    Exit,
     ShowToast(String),
 }

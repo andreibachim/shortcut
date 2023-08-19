@@ -11,6 +11,17 @@ Note the the app is under heavy development. I do not recommend using it unless 
 
 (It saves a new file to <code>$HOME/.local/share/applications</code>)
 
+## Installing
+
+There is no way to easily install the app right now, you have to build it yourself. 
+
+### Build from source code
+
+Requirements
+- Minimum Rust version > 1.70 - check it by running: ```rustc -V```
+- Minimum GTK version > 4.10 - check it by running ```pkg-config --modversion gtk4```
+- Minimium Libadwaita version > 1.3 - check it by running ```pkg-config --modversion libadwaita-1```
+
 ## Roadmap
 
 The roadmap for adding features includes:

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.andreibachim.shortcut</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Shortcut</name>
+  <summary>Make .desktop files</summary>
+  <description>
+    <p>
+      Shortcut is a tool to quickly make .desktop files.
+    </p>
+  </description>
+  <provides>
+    <id>io.github.andreibachim.shortcut</id>
+  </provides>
+  <launchable type="desktop-id">io.github.andreibachim.shortcut.desktop</launchable>
+  <url type="homepage">https://github.com/andreibachim/shortcut</url>
+  <url type="bugtracker">https://github.com/andreibachim/shortcut/issues</url>
+  <update_contact>Andrei Achim</update_contact>
+  <developer_name>Achim Andrei</developer_name>
+</component>

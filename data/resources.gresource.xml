@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/com/github/andreibachim/Shortcut/">
-    <file preprocess="xml-stripblanks">com.github.andreibachim.Shortcut.svg</file>
+  <gresource prefix="/io/github/andreibachim/shortcut/icons/scalable/apps/">
+    <file preprocess="xml-stripblanks">io.github.andreibachim.shortcut.svg</file>
+  </gresource>
+  <gresource prefix="/io/github/andreibachim/shortcut/">
+    <file compressed="true" preprocess="xml-stripblanks">ui/keyboard-shortcuts.ui</file>
   </gresource>
 </gresources>
