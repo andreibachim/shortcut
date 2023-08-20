@@ -112,7 +112,7 @@ mod imp {
 
         icon_preview.set_child(Some(
             &gtk::Image::builder()
-                .icon_name("image-missing-symbolic")
+                .icon_name("preview-placeholder")
                 .pixel_size(128)
                 .build(),
         ));
