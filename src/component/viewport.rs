@@ -30,7 +30,7 @@ mod imp {
             let landing_view = crate::view::Landing::new(sender.clone());
             carousel.append(&landing_view);
             
-            let quick_flow_view = crate::view::QuickFlow::new(sender.clone());
+            let quick_flow_view = crate::view::QuickMode::new(sender.clone());
             quick_flow_view.set_sensitive(false);
             carousel.append(&quick_flow_view);
             

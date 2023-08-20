@@ -46,7 +46,7 @@
             <property name="spacing">16</property>
             <child>
               <object class="GtkButton">
-                <property name="action-name">menu.quick-mode</property>
+                <property name="action-name">menu.quick_mode</property>
                 <style>
                   <class name="suggested-action" />
                 </style>

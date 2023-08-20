@@ -8,12 +8,15 @@
   <gresource prefix="/io/github/andreibachim/shortcut/">
     <file compressed="true"
       preprocess="xml-stripblanks"
-      alias="keyboard-shortcuts.ui">resources/ui/keyboard-shortcuts.ui</file>
+      alias="keyboard_shortcuts.ui">resources/ui/keyboard_shortcuts.ui</file>
     <file compressed="true"
       preprocess="xml-stripblanks"
       alias="completed.ui">resources/ui/completed.ui</file>
     <file compressed="true"
       preprocess="xml-stripblanks"
       alias="landing.ui">resources/ui/landing.ui</file>
+    <file compressed="true"
+      preprocess="xml-stripblanks"
+      alias="quick_mode.ui">resources/ui/quick_mode.ui</file>
   </gresource>
 </gresources>

@@ -24,7 +24,7 @@
           <object class="GtkButton">
             <property name="label">_Menu</property>
             <property name="use-underline">true</property>
-            <property name="action-name">completed.main-menu</property>
+            <property name="action-name">completed.main_menu</property>
             <style>
               <class name="pill" />
               <class name="suggested-action" />

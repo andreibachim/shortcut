@@ -104,7 +104,7 @@ fn set_up_actions(app: &adw::Application) {
     let keyboard_shortcuts = gtk::gio::ActionEntry::builder("shortcuts")
         .activate(|app: &adw::Application, _, _| {
             let shortcut_window: gtk::ShortcutsWindow = gtk::Builder::from_resource(
-                "/io/github/andreibachim/shortcut/keyboard-shortcuts.ui",
+                "/io/github/andreibachim/shortcut/keyboard_shortcuts.ui",
             )
             .object("keyboard_shortcuts")
             .unwrap();

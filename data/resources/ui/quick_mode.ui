@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="QuickMode" parent="GtkBox">
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">true</property>
+        <!-- Preview -->
+        <child>
+          <object class="GtkBox">
+            <property name="vexpand">true</property>
+            <property name="valign">end</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">16</property>
+            <property name="margin-top">64</property>
+            <property name="margin-bottom">64</property>
+            <!-- Icon Preview Container -->
+            <child>
+              <object class="AdwBin" id="icon_preview">
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">preview-placeholder</property>
+                    <property name="pixel-size">128</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <!-- Label -->
+            <child>
+              <object class="GtkLabel" id="name_preview">
+                <property name="opacity">0.3</property>
+                <property name="label">Name preview</property>
+                <style>
+                  <class name="title-2" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <!-- Form -->
+        <child>
+          <object class="AdwClamp">
+            <property name="vexpand">true</property>
+            <property name="valign">start</property>
+            <property name="margin-bottom">48</property>
+            <property name="maximum-size">480</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">16</property>
+                <!-- Name -->
+                <child>
+                  <object class="GtkListBox">
+                    <style>
+                      <class name="boxed-list" />
+                    </style>
+                    <child>
+                      <object class="AdwEntryRow" id="name_input">
+                        <property name="title">Application Name</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <!-- Exec -->
+                <child>
+                  <object class="GtkListBox">
+                    <style>
+                      <class name="boxed-list" />
+                    </style>
+                    <child>
+                      <object class="AdwEntryRow" id="exec_input">
+                        <property name="show-apply-button">true</property>
+                        <property name="title">Executable Path</property>
+                        <child type="suffix">
+                          <object class="GtkButton">
+                            <property name="icon-name">document-open-symbolic</property>
+                            <property name="valign">center</property>
+                            <property name="action-name">pick_exec</property>
+                            <style>
+                              <class name="circular" />
+                              <class name="flat" />
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <!-- Icon -->
+                <child>
+                  <object class="GtkListBox">
+                    <style>
+                      <class name="boxed-list" />
+                    </style>
+                    <child>
+                      <object class="AdwEntryRow" id="icon_input">
+                        <property name="show-apply-button">true</property>
+                        <property name="title">Icon Location</property>
+                        <child type="suffix">
+                          <object class="GtkButton">
+                            <property name="icon-name">document-open-symbolic</property>
+                            <property name="valign">center</property>
+                            <property name="action-name">pick_icon</property>
+                            <style>
+                              <class name="circular" />
+                              <class name="flat" />
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <!-- Navbar -->
+        <child>
+          <object class="GtkCenterBox">
+            <property name="margin-start">32</property>
+            <property name="margin-end">32</property>
+            <property name="margin-bottom">16</property>
+            <property name="valign">end</property>
+            <style>
+              <class name="toolbar" />
+              <class name="osd" />
+            </style>
+            <!-- Cancel button -->
+            <child type="start">
+              <object class="GtkButton" id="cancel_button">
+                <property name="use-underline">true</property>
+                <property name="action-name">back</property>
+                <property name="label">_Cancel</property>
+              </object>
+            </child>
+            <!-- Save button -->
+            <child type="end">
+              <object class="GtkButton" id="save_button">
+                <property name="use-underline">true</property>
+                <property name="action-name">save</property>
+                <property name="label">_Save</property>
+                <style>
+                  <class name="suggested-action" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
