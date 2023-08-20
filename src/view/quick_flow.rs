@@ -40,12 +40,13 @@ mod imp {
 
             let navbar = gtk::CenterBox::new();
             let back_button = gtk::Button::builder()
-                // .css_classes(vec!["flat"])
-                .label("Back")
+                .child(&gtk::Label::with_mnemonic("_Cancel"))
+                .receives_default(false)
                 .build();
             let save_button = gtk::Button::builder()
                 .css_classes(vec!["suggested-action"])
-                .label("Save")
+                .child(&gtk::Label::with_mnemonic("_Save"))
+                .receives_default(false)
                 .build();
             config_navbar(&navbar, &back_button, &save_button);
 

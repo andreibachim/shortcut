@@ -11,13 +11,13 @@
             <property name="title">General</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title">Show keyboard shortcuts</property>
+                <property name="title">Shortcuts</property>
                 <property name="accelerator">&lt;ctrl&gt;question</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title">Close the application</property>
+                <property name="title">Close</property>
                 <property name="accelerator">&lt;ctrl&gt;Q</property>
               </object>
             </child>
@@ -28,8 +28,25 @@
             <property name="title">Main menu</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title">Start quick flow</property>
+                <property name="title">Quick flow</property>
                 <property name="accelerator">&lt;alt&gt;q</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title">Quick mode</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title">Cancel</property>
+                <property name="accelerator">&lt;alt&gt;c</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title">Save</property>
+                <property name="accelerator">&lt;alt&gt;s</property>
               </object>
             </child>
           </object>
