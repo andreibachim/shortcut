@@ -9,5 +9,8 @@
     <file compressed="true"
       preprocess="xml-stripblanks"
       alias="keyboard-shortcuts.ui">resources/ui/keyboard-shortcuts.ui</file>
+    <file compressed="true"
+      preprocess="xml-stripblanks"
+      alias="completed.ui">resources/ui/completed.ui</file>
   </gresource>
 </gresources>

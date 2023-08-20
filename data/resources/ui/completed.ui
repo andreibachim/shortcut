@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="Completed" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="spacing">24</property>
+    <property name="hexpand">true</property>
+    <property name="halign">center</property>
+    <property name="vexpand">true</property>
+    <property name="valign">center</property>
+    <child>
+      <object class="GtkLabel">
+        <property name="label">All done!</property>
+        <style>
+          <class name="title-1" />
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">horizontal</property>
+        <property name="spacing">8</property>
+        <property name="homogeneous">true</property>
+        <child>
+          <object class="GtkButton">
+            <property name="label">_Menu</property>
+            <property name="use-underline">true</property>
+            <property name="action-name">completed.main-menu</property>
+            <style>
+              <class name="pill" />
+              <class name="suggested-action" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label">_Quit</property>
+            <property name="use-underline">true</property>
+            <property name="action-name">window.close</property>
+            <style>
+              <class name="pill" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
