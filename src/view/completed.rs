@@ -26,7 +26,6 @@ mod imp {
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
 
-            // Refresh
             klass.install_action("completed.main-menu", None, move |completed, _, _| {
                 let imp = completed.imp();
                 let _ = imp.sender.get().unwrap().send(Action::Landing(false));

@@ -12,5 +12,8 @@
     <file compressed="true"
       preprocess="xml-stripblanks"
       alias="completed.ui">resources/ui/completed.ui</file>
+    <file compressed="true"
+      preprocess="xml-stripblanks"
+      alias="landing.ui">resources/ui/landing.ui</file>
   </gresource>
 </gresources>
