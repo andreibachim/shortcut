@@ -19,9 +19,6 @@ modules:
       - install -D data/io.github.andreibachim.shortcut.desktop /app/share/applications/io.github.andreibachim.shortcut.desktop
       - install -D data/io.github.andreibachim.shortcut.metainfo.xml /app/share/metainfo/io.github.andreibachim.shortcut.appdata.xml
     sources:
-      - type: dir
-        path: .
-        #sources:
-        #- type: archive
-        #url: https://github.com/andreibachim/shortcut/releases/download/v0.1.0-alpha/v0.1.0-alpha.zip
-        #sha512: 2017051d0e11531b41ebbeebd615afefd58a3f4d1486119b7b49aa8435f7ecc9584ff2d4f17f16680073fc38f5ab7a4bb76cf4bc9a2214fbeb421db0dd9eb5ea
+      - type: archive
+        url: https://github.com/andreibachim/shortcut/releases/download/v0.1.0/v0.1.0.zip
+        sha512: 0645fb83c62118e0b598d3571fff3d4df32b990975358d21201c8af13cffa8f31e18a64e738cd7fa17b136568ed88718c99bdb716e2899c74a0239a15781b0ba
