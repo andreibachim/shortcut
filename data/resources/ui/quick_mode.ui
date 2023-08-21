@@ -30,7 +30,7 @@
             <child>
               <object class="GtkLabel" id="name_preview">
                 <property name="opacity">0.3</property>
-                <property name="label">Name preview</property>
+                <property name="label">Preview</property>
                 <style>
                   <class name="title-2" />
                 </style>
@@ -62,31 +62,6 @@
                     </child>
                   </object>
                 </child>
-                <!-- Exec -->
-                <child>
-                  <object class="GtkListBox">
-                    <style>
-                      <class name="boxed-list" />
-                    </style>
-                    <child>
-                      <object class="AdwEntryRow" id="exec_input">
-                        <property name="show-apply-button">true</property>
-                        <property name="title">Executable Path</property>
-                        <child type="suffix">
-                          <object class="GtkButton">
-                            <property name="icon-name">document-open-symbolic</property>
-                            <property name="valign">center</property>
-                            <property name="action-name">pick_exec</property>
-                            <style>
-                              <class name="circular" />
-                              <class name="flat" />
-                            </style>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
                 <!-- Icon -->
                 <child>
                   <object class="GtkListBox">
@@ -112,13 +87,40 @@
                     </child>
                   </object>
                 </child>
+                <!-- Exec -->
+                <child>
+                  <object class="GtkListBox">
+                    <style>
+                      <class name="boxed-list" />
+                    </style>
+                    <child>
+                      <object class="AdwEntryRow" id="exec_input">
+                        <property name="show-apply-button">true</property>
+                        <property name="title">Executable Path</property>
+                        <child type="suffix">
+                          <object class="GtkButton">
+                            <property name="icon-name">document-open-symbolic</property>
+                            <property name="valign">center</property>
+                            <property name="action-name">pick_exec</property>
+                            <style>
+                              <class name="circular" />
+                              <class name="flat" />
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+
               </object>
             </child>
           </object>
         </child>
         <!-- Navbar -->
         <child>
-          <object class="GtkCenterBox">
+          <object class="GtkGrid">
+            <property name="column-homogeneous">true</property>
             <property name="margin-start">32</property>
             <property name="margin-end">32</property>
             <property name="margin-bottom">16</property>
@@ -128,19 +130,41 @@
               <class name="osd" />
             </style>
             <!-- Cancel button -->
-            <child type="start">
+            <child>
               <object class="GtkButton" id="cancel_button">
                 <property name="use-underline">true</property>
-                <property name="action-name">back</property>
                 <property name="label">_Cancel</property>
+                <property name="action-name">cancel</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <!-- Spacer -->
+            <child>
+              <object class="GtkSeparator">
+                <style>
+                  <class name="spacer" />
+                </style>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="column-span">2</property>
+                  <property name="row">0</property>
+                </layout>
               </object>
             </child>
             <!-- Save button -->
-            <child type="end">
+            <child>
               <object class="GtkButton" id="save_button">
+                <property name="sensitive">false</property>
                 <property name="use-underline">true</property>
-                <property name="action-name">save</property>
                 <property name="label">_Save</property>
+                <signal name="clicked" handler="save" swapped="true" />
+                <layout>
+                  <property name="column">3</property>
+                  <property name="row">0</property>
+                </layout>
                 <style>
                   <class name="suggested-action" />
                 </style>

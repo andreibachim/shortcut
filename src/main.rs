@@ -13,7 +13,6 @@ fn main() -> gtk::glib::ExitCode {
     gtk::gio::resources_register_include!("shortcut.gresource").expect("Could not load resources");
 
     let app = adw::Application::builder().application_id(APP_ID).build();
-    app.set_flags(gtk::gio::ApplicationFlags::HANDLES_OPEN);
     app.connect_activate(build_window);
     set_up_actions(&app);
     app.run()

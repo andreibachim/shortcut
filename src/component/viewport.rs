@@ -1,71 +1,90 @@
 mod imp {
     use std::{cell::RefCell, time::Duration};
 
-    use adw::{subclass::prelude::*, traits::BinExt};
+    use adw::subclass::prelude::*;
     use gtk::{
-        glib::{self, clone},
-        traits::{WidgetExt, ButtonExt},
+        glib::{self, clone, subclass::InitializingObject},
+        traits::{ButtonExt, WidgetExt},
+        CompositeTemplate,
     };
 
     use super::Action;
 
+    #[derive(CompositeTemplate, Default)]
+    #[template(resource = "/io/github/andreibachim/shortcut/component/viewport.ui")]
     pub struct Viewport {
-        carousel: adw::Carousel,
-        toast_overlay: gtk::Overlay,
+        #[template_child]
+        toast_overlay: TemplateChild<gtk::Overlay>,
+        #[template_child]
+        carousel: TemplateChild<adw::Carousel>,
     }
 
-    impl Default for Viewport {
-        fn default() -> Self {
+    #[glib::object_subclass]
+    impl ObjectSubclass for Viewport {
+        const NAME: &'static str = "Viewport";
+        type Type = super::Viewport;
+        type ParentType = adw::Bin;
+
+        fn new() -> Self {
+            Self {
+                ..Default::default()
+            }
+        }
+
+        fn class_init(klass: &mut Self::Class) {
+            klass.bind_template();
+        }
+
+        fn instance_init(obj: &InitializingObject<Self>) {
+            obj.init_template();
+        }
+    }
+
+    impl ObjectImpl for Viewport {
+        fn constructed(&self) {
+            self.parent_constructed();
+
             let (sender, r) = gtk::glib::MainContext::channel(gtk::glib::Priority::default());
             let receiver = RefCell::new(Some(r));
 
-            let toast_overlay = gtk::Overlay::new();
-
-            let carousel = adw::Carousel::builder()
-                .interactive(false)
-                .hexpand(true)
-                .vexpand(true)
-                .build();
+            let carousel = self.carousel.get();
+            let toast_overlay = self.toast_overlay.get();
 
             let landing_view = crate::view::Landing::new(sender.clone());
             carousel.append(&landing_view);
-            
-            let quick_flow_view = crate::view::QuickMode::new(sender.clone());
-            quick_flow_view.set_sensitive(false);
-            carousel.append(&quick_flow_view);
-            
-            let confirmation = crate::view::Completed::new(sender.clone());
-            confirmation.set_sensitive(false);
-            carousel.append(&confirmation);
+            let quick_mode_view = crate::view::QuickMode::new(sender.clone());
+            carousel.append(&quick_mode_view);
+            let completed_view = crate::view::Completed::new(sender.clone());
+            carousel.append(&completed_view);
 
             receiver.borrow_mut().take().unwrap().attach(
                 None,
                 clone!(@strong carousel, @strong toast_overlay => move |action| {
-                    let disable_all_children = || {
+                    let disable_focus_on_all_children = || {
                         for view_index in 0..carousel.n_pages() {
                             carousel.nth_page(view_index).set_sensitive(false);
                         }
                     };
                     match action {
                         Action::Landing(scroll) => {
-                            disable_all_children();
+                            disable_focus_on_all_children();
                             landing_view.set_sensitive(true);
                             carousel.scroll_to(&landing_view, scroll);
                         },
                         Action::QuickFlow => {
-                            disable_all_children();
-                            quick_flow_view.set_sensitive(true);
-                            carousel.reorder(&quick_flow_view, 1);
-                            carousel.scroll_to(&quick_flow_view, true);
+                            disable_focus_on_all_children();
+                            quick_mode_view.clear_data();
+                            quick_mode_view.set_sensitive(true);
+                            carousel.reorder(&quick_mode_view, 1);
+                            carousel.scroll_to(&quick_mode_view, true);
                         },
                         Action::Completed => {
-                            disable_all_children();
-                            confirmation.set_sensitive(true);
-                            carousel.reorder(&confirmation, (carousel.position() + 1.0) as i32);
-                            carousel.scroll_to(&confirmation, true);
+                            disable_focus_on_all_children();
+                            completed_view.set_sensitive(true);
+                            carousel.reorder(&completed_view, (carousel.position() + 1.0) as i32);
+                            carousel.scroll_to(&completed_view, true);
                         },
                         Action::ShowToast(toast) => {
-
                             let close_button = gtk::Button::builder()
                                 .css_classes(vec!["flat", "circular"])
                                 .icon_name("window-close-symbolic")
@@ -87,14 +106,14 @@ mod imp {
                                 )
                                 .end_widget(&close_button)
                                 .build();
-                
+
                             let toast_revealer = gtk::Revealer::builder()
                                 .transition_type(gtk::RevealerTransitionType::SwingDown)
                                 .transition_duration(400)
                                 .focusable(false)
                                 .child(&toast_container)
                                 .build();
-                
+
                             close_button.connect_clicked(
                                 clone!(@weak toast_overlay, @weak toast_revealer => move |_| {
                                     toast_revealer.set_reveal_child(false);
@@ -125,26 +144,6 @@ mod imp {
                     gtk::glib::ControlFlow::Continue
                 }),
             );
-
-            Self {
-                carousel,
-                toast_overlay,
-            }
-        }
-    }
-
-    #[glib::object_subclass]
-    impl ObjectSubclass for Viewport {
-        const NAME: &'static str = "Viewport";
-        type Type = super::Viewport;
-        type ParentType = adw::Bin;
-    }
-
-    impl ObjectImpl for Viewport {
-        fn constructed(&self) {
-            self.parent_constructed();
-            self.toast_overlay.set_child(Some(&self.carousel));
-            self.obj().set_child(Some(&self.toast_overlay));
         }
     }
     impl WidgetImpl for Viewport {}
@@ -171,7 +170,6 @@ impl Default for Viewport {
         Self::new()
     }
 }
-
 pub enum Action {
     Landing(bool),
     QuickFlow,

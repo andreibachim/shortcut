@@ -18,5 +18,8 @@
     <file compressed="true"
       preprocess="xml-stripblanks"
       alias="quick_mode.ui">resources/ui/quick_mode.ui</file>
+    <file compressed="true"
+      preprocess="xml-stripblanks"
+      alias="component/viewport.ui">resources/ui/component/viewport.ui</file>
   </gresource>
 </gresources>

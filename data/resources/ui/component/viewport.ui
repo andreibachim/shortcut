@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="Viewport" parent="AdwBin">
+    <child>
+      <object class="GtkOverlay" id="toast_overlay">
+        <child>
+          <object class="AdwCarousel" id="carousel">
+            <property name="interactive">false</property>
+            <!-- Children are programatically inserted -->
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

@@ -45,6 +45,7 @@ use glib::Object;
 use gtk::{
     glib::{self, Sender},
     subclass::prelude::ObjectSubclassIsExt,
+    traits::WidgetExt,
 };
 
 use crate::component::viewport::Action;
@@ -58,6 +59,7 @@ glib::wrapper! {
 impl Completed {
     pub fn new(sender: Sender<Action>) -> Self {
         let slf = Object::builder::<Self>().build();
+        slf.set_sensitive(false);
         let _ = slf.imp().sender.set(sender);
         slf
     }

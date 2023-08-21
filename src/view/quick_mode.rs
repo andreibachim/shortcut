@@ -9,7 +9,7 @@ mod imp {
 
     use gtk::glib::subclass::InitializingObject;
     use gtk::glib::{self, clone, closure, Properties, Sender};
-    use gtk::prelude::{FileExt, GObjectPropertyExpressionExt, ObjectExt};
+    use gtk::prelude::{CastNone, FileExt, GObjectPropertyExpressionExt, ObjectExt};
     use gtk::subclass::prelude::*;
     use gtk::traits::{EditableExt, WidgetExt};
     use gtk::{ClosureExpression, CompositeTemplate};
@@ -26,7 +26,6 @@ mod imp {
         #[property(name = "icon", get, set, type = String, member = icon)]
         pub data: RefCell<Desktop>,
         pub sender: OnceCell<Sender<Action>>,
-
         #[template_child]
         pub cancel_button: TemplateChild<gtk::Button>,
         #[template_child]
@@ -41,6 +40,30 @@ mod imp {
         pub icon_input: TemplateChild<adw::EntryRow>,
         #[template_child]
         pub icon_preview: TemplateChild<adw::Bin>,
+    }
+
+    #[gtk::template_callbacks]
+    impl QuickMode {
+        #[template_callback]
+        fn save(&self) {
+            let data = self.data.borrow();
+            let file_path = gtk::glib::home_dir().join(format!(
+                ".local/share/applications/{}.desktop",
+                data.name.replace(' ', "-").to_lowercase()
+            ));
+            let mut file = File::create(file_path).expect("Could not create a new file");
+            file.write_all(
+                data.get_output()
+                    .expect("Could not serialize desktop file for writing")
+                    .as_bytes(),
+            )
+            .expect("Could not write to .desktop file.");
+            let _ = self
+                .sender
+                .get()
+                .expect("Could not get sender")
+                .send(Action::Completed);
+        }
     }
 
     #[glib::object_subclass]
@@ -58,33 +81,20 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+            klass.bind_template_callbacks();
 
             klass.install_action("back", None, move |quick_mode, _, _| {
                 let imp = quick_mode.imp();
                 let _ = imp.sender.get().unwrap().send(Action::Landing(true));
             });
 
-            klass.install_action("save", None, move |quick_mode, _, _| {
-                let imp = quick_mode.imp();
-                let data = imp.data.borrow();
-                let file_path = dirs::home_dir()
-                    .expect("Could not get the home directory")
-                    .join(format!(
-                        ".local/share/applications/{}.desktop",
-                        data.name.replace(' ', "-").to_lowercase()
-                    ));
-                let mut file = File::create(file_path).expect("Could not create a new file");
-                file.write_all(
-                    data.get_output()
-                        .expect("Could not serialize desktop file for writing")
-                        .as_bytes(),
-                )
-                .expect("Could not write to .desktop file.");
-                let _ = imp
+            klass.install_action("cancel", None, move |quick_mode, _, _| {
+                let _ = quick_mode
+                    .imp()
                     .sender
                     .get()
-                    .expect("Could not get sender")
-                    .send(Action::Completed);
+                    .unwrap()
+                    .send(Action::Landing(true));
             });
 
             klass.install_action("pick_exec", None, move |quick_mode, _, _| {
@@ -107,7 +117,9 @@ mod imp {
                     .title("Select Executable File")
                     .build();
                 dialog.open(
-                    None::<&gtk::Window>,
+                    quick_mode
+                        .parent()
+                        .and_downcast_ref::<adw::ApplicationWindow>(),
                     None::<&gtk::gio::Cancellable>,
                     clone!(@weak imp => move |file| {
                         if let Ok(file) = file {
@@ -122,7 +134,6 @@ mod imp {
                     }),
                 );
             });
-
             klass.install_action("pick_icon", None, move |quick_mode, _, _| {
                 let imp = quick_mode.imp();
 
@@ -175,7 +186,7 @@ mod imp {
             .sync_create()
             .transform_to(|_, value: &str| -> Option<&str> {
                 match value.is_empty() {
-                    true => Some("Application name"),
+                    true => Some("Preview"),
                     false => Some(value),
                 }
             })
@@ -205,6 +216,7 @@ mod imp {
             if path.exists() && path.is_file() {
                 entry_row.set_css_classes(&[]);
                 slf.obj().set_exec(text);
+                slf.save_button.grab_focus();
             } else {
                 let _ = slf.sender.get().expect("Could not get sender").send(Action::ShowToast("The executable path is not valid".to_owned()));
                 entry_row.set_css_classes(&["error"]);
@@ -221,6 +233,7 @@ mod imp {
                 slf.icon_preview.set_child(
                     Some(&gtk::Image::builder().file(entry_row.text()).pixel_size(128).css_classes(vec!["icon-dropshadow"]).build())
                 );
+                slf.exec_input.grab_focus();
             } else {
                 let _ = slf.sender.get().expect("Could not get sender").send(Action::ShowToast("The icon path is not valid".to_owned()));
                 entry_row.set_css_classes(&["error"]);
@@ -250,10 +263,12 @@ mod imp {
     impl BoxImpl for QuickMode {}
 }
 
+use adw::traits::BinExt;
 use glib::Object;
 use gtk::{
     glib::{self, Sender},
     subclass::prelude::ObjectSubclassIsExt,
+    traits::{EditableExt, WidgetExt},
 };
 
 use crate::component::viewport::Action;
@@ -267,7 +282,22 @@ glib::wrapper! {
 impl QuickMode {
     pub fn new(sender: Sender<Action>) -> Self {
         let slf = Object::builder::<Self>().build();
+        slf.set_sensitive(false);
         let _ = slf.imp().sender.set(sender);
         slf
+    }
+
+    pub fn clear_data(&self) {
+        let imp = self.imp();
+        imp.name_input.set_text("");
+        imp.name_input.grab_focus();
+        imp.exec_input.set_text("");
+        imp.icon_input.set_text("");
+        imp.icon_preview.set_child(Some(
+            &gtk::Image::builder()
+                .icon_name("preview-placeholder")
+                .pixel_size(128)
+                .build(),
+        ));
     }
 }

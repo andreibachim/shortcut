@@ -23,7 +23,7 @@ mod imp {
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
 
-            klass.install_action("menu.quick_mode", None, move |landing, _, _| {
+            klass.install_action("quick_mode", None, move |landing, _, _| {
                 let imp = landing.imp();
                 let _ = imp.sender.get().unwrap().send(Action::QuickFlow);
             });
@@ -55,8 +55,7 @@ glib::wrapper! {
 impl Landing {
     pub fn new(sender: Sender<Action>) -> Self {
         let slf = Object::builder::<Self>().build();
-        let landing = slf.imp();
-        landing.sender.set(sender).unwrap();
+        let _ = slf.imp().sender.set(sender);
         slf
     }
 }
