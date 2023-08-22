@@ -9,6 +9,49 @@
             <!-- Children are programatically inserted -->
           </object>
         </child>
+        <child type="overlay">
+          <object class="GtkRevealer" id="toast_revealer">
+            <property name="valign">start</property>
+            <property name="transition-type">slide-down</property>
+            <property name="transition-duration">200</property>
+            <child>
+              <object class="GtkCenterBox">
+                <property name="valign">start</property>
+                <property name="margin-start">32</property>
+                <property name="margin-end">32</property>
+                <property name="hexpand">true</property>
+                <style>
+                  <class name="app-notification" />
+                  <class name="osd" />
+                </style>
+                <child type="start">
+                  <object class="GtkImage">
+                    <property name="icon-name">emblem-important-symbolic</property>
+                    <property name="pixel-size">24</property>
+                    <property name="margin-start">8</property>
+                    <style>
+                      <class name="error" />
+                    </style>
+                  </object>
+                </child>
+                <child type="center">
+                  <object class="GtkLabel" id="toast_label">
+                  </object>
+                </child>
+                <child type="end">
+                  <object class="GtkButton">
+                    <property name="icon-name">window-close-symbolic</property>
+                    <property name="action-name">close_toast</property>
+                    <style>
+                      <class name="flat" />
+                      <class name="circular" />
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </template>

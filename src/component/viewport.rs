@@ -1,10 +1,9 @@
 mod imp {
-    use std::{cell::RefCell, time::Duration};
+    use std::{cell::RefCell, time::Duration, sync::Arc};
 
-    use adw::subclass::prelude::*;
+    use adw::{subclass::prelude::*, prelude::WidgetExt};
     use gtk::{
-        glib::{self, clone, subclass::InitializingObject},
-        traits::{ButtonExt, WidgetExt},
+        glib::{self, subclass::InitializingObject, clone},
         CompositeTemplate,
     };
 
@@ -17,6 +16,12 @@ mod imp {
         toast_overlay: TemplateChild<gtk::Overlay>,
         #[template_child]
         carousel: TemplateChild<adw::Carousel>,
+        #[template_child]
+        toast_revealer: TemplateChild<gtk::Revealer>,
+        #[template_child]
+        toast_label: TemplateChild<gtk::Label>,
+
+        current_toast: Arc<RefCell<i64>>
     }
 
     #[glib::object_subclass]
@@ -33,6 +38,11 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+
+            klass.install_action("close_toast", None, move |viewport, _, _| {
+                let imp = viewport.imp();
+                imp.toast_revealer.set_reveal_child(false);
+            })
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {
@@ -49,6 +59,9 @@ mod imp {
 
             let carousel = self.carousel.get();
             let toast_overlay = self.toast_overlay.get();
+            let toast_revealer = self.toast_revealer.get();
+            let toast_label = self.toast_label.get();
+            let current_toast = self.current_toast.clone();
 
             let landing_view = crate::view::Landing::new(sender.clone());
             carousel.append(&landing_view);
@@ -59,7 +72,11 @@ mod imp {
 
             receiver.borrow_mut().take().unwrap().attach(
                 None,
-                clone!(@strong carousel, @strong toast_overlay => move |action| {
+                clone!(@strong carousel, 
+                    @strong toast_overlay, 
+                    @strong toast_revealer, 
+                    @strong toast_label,
+                    @strong current_toast => move |action| {
                     let disable_focus_on_all_children = || {
                         for view_index in 0..carousel.n_pages() {
                             carousel.nth_page(view_index).set_sensitive(false);
@@ -85,59 +102,22 @@ mod imp {
                             carousel.scroll_to(&completed_view, true);
                         },
                         Action::ShowToast(toast) => {
-                            let close_button = gtk::Button::builder()
-                                .css_classes(vec!["flat", "circular"])
-                                .icon_name("window-close-symbolic")
-                                .build();
-
-                            let toast_container = gtk::CenterBox::builder()
-                                .css_classes(vec!["app-notification", "osd"])
-                                .margin_start(32)
-                                .margin_end(32)
-                                .valign(gtk::Align::Start)
-                                .hexpand(true)
-                                .start_widget(
-                                    &gtk::Image::builder()
-                                        .css_classes(vec!["error"])
-                                        .icon_name("emblem-important-symbolic")
-                                        .margin_start(8)
-                                        .pixel_size(24)
-                                        .build(),
-                                )
-                                .end_widget(&close_button)
-                                .build();
-
-                            let toast_revealer = gtk::Revealer::builder()
-                                .transition_type(gtk::RevealerTransitionType::SwingDown)
-                                .transition_duration(400)
-                                .focusable(false)
-                                .child(&toast_container)
-                                .build();
-
-                            close_button.connect_clicked(
-                                clone!(@weak toast_overlay, @weak toast_revealer => move |_| {
-                                    toast_revealer.set_reveal_child(false);
-                                    toast_revealer.connect_child_revealed_notify(clone!(@weak toast_overlay => move |revealer| {
-                                        toast_overlay.remove_overlay(revealer);
-                                    }));
-                                }),
-                            );
-                            toast_container.set_center_widget(Some(&gtk::Label::new(Some(&toast))));
+                            let current_time = gtk::glib::real_time();
+                            *current_toast.borrow_mut() = current_time;
 
                             let (sender, receiver) = gtk::glib::MainContext::channel(gtk::glib::Priority::default());
+
                             gtk::gio::spawn_blocking(clone!(@strong sender => move || {
-                                std::thread::sleep(Duration::from_secs(4));
+                                std::thread::sleep(Duration::from_secs(10));
                                 let _ = sender.send(());
                             }));
-                            receiver.attach(None, clone!(@strong toast_overlay, @strong toast_revealer => move |_:()| {
-                                toast_revealer.set_reveal_child(false);
-                                toast_revealer.connect_child_revealed_notify(clone!(@weak toast_overlay => move |revealer| {
-                                    if revealer.parent().is_some() { revealer.unparent() }
-                                }));
 
+                            receiver.attach(None, clone!(@strong toast_revealer, @strong current_toast => move |_: ()| {
+                                if current_time == *current_toast.borrow() { toast_revealer.set_reveal_child(false); };
                                 gtk::glib::ControlFlow::Continue
                             }));
-                            toast_overlay.add_overlay(&toast_revealer);
+
+                            toast_label.set_label(&toast);
                             toast_revealer.set_reveal_child(true);
                         }
                     }
