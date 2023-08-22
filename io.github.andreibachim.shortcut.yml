@@ -20,5 +20,5 @@ modules:
       - install -D data/io.github.andreibachim.shortcut.metainfo.xml /app/share/metainfo/io.github.andreibachim.shortcut.appdata.xml
     sources:
       - type: archive
-        url: https://github.com/andreibachim/shortcut/releases/download/v0.1.0/v0.1.0.zip
-        sha512: 0645fb83c62118e0b598d3571fff3d4df32b990975358d21201c8af13cffa8f31e18a64e738cd7fa17b136568ed88718c99bdb716e2899c74a0239a15781b0ba
+        url: https://github.com/andreibachim/shortcut/releases/download/v0.1.1/v0.1.1.zip
+        sha512: 48607cf946404fd460c73652df438379810a314d9db6b2bfd4c40492fbde48c891d1e18053e38e56d61f6053a5a51ffe5c871af6f349c400890c031d286f3e55
