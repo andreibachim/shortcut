@@ -31,12 +31,12 @@
         https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot1.png</image>
       <caption>Screenshot of the main menu</caption>
     </screenshot>
-    <screenshot type="default">
+    <screenshot>
       <image>
         https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot2.png</image>
       <caption>Dark mode with name and icon preview</caption>
     </screenshot>
-    <screenshot type="default">
+    <screenshot>
       <image>
         https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot3.png</image>
       <caption>Light mode with empty form</caption>
