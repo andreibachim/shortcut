@@ -604,7 +604,7 @@ dependencies = [
 
 [[package]]
 name = "shortcut"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "glib-build-tools",
  "gtk4",
