@@ -1,9 +1,13 @@
 mod imp {
-    use std::{cell::RefCell, time::Duration, sync::Arc};
+    use std::{cell::RefCell, sync::Arc, time::Duration};
 
-    use adw::{subclass::prelude::*, prelude::WidgetExt};
+    use adw::{
+        prelude::{ButtonExt, WidgetExt},
+        subclass::prelude::*,
+    };
     use gtk::{
-        glib::{self, subclass::InitializingObject, clone},
+        glib::{self, clone, subclass::InitializingObject},
+        prelude::CastNone,
         CompositeTemplate,
     };
 
@@ -21,7 +25,7 @@ mod imp {
         #[template_child]
         toast_label: TemplateChild<gtk::Label>,
 
-        current_toast: Arc<RefCell<i64>>
+        current_toast: Arc<RefCell<i64>>,
     }
 
     #[glib::object_subclass]
@@ -72,9 +76,9 @@ mod imp {
 
             receiver.borrow_mut().take().unwrap().attach(
                 None,
-                clone!(@strong carousel, 
-                    @strong toast_overlay, 
-                    @strong toast_revealer, 
+                clone!(@strong carousel,
+                    @strong toast_overlay,
+                    @strong toast_revealer,
                     @strong toast_label,
                     @strong current_toast => move |action| {
                     let disable_focus_on_all_children = || {
@@ -101,14 +105,22 @@ mod imp {
                             carousel.reorder(&completed_view, (carousel.position() + 1.0) as i32);
                             carousel.scroll_to(&completed_view, true);
                         },
-                        Action::ShowToast(toast) => {
+                        Action::ShowToast(toast, widget) => {
+
+                            toast_revealer.child().and_dynamic_cast::<gtk::CenterBox>()
+                                .expect("Child of toast revelear is not a GtkCenterBox")
+                                .end_widget().and_dynamic_cast::<gtk::Button>().expect("End child of revealer box is not a GtkButton")
+                                .connect_clicked(move |_| {
+                                    widget.grab_focus();
+                                });
+
                             let current_time = gtk::glib::real_time();
                             *current_toast.borrow_mut() = current_time;
 
                             let (sender, receiver) = gtk::glib::MainContext::channel(gtk::glib::Priority::default());
 
                             gtk::gio::spawn_blocking(clone!(@strong sender => move || {
-                                std::thread::sleep(Duration::from_secs(10));
+                                std::thread::sleep(Duration::from_secs(4));
                                 let _ = sender.send(());
                             }));
 
@@ -154,5 +166,5 @@ pub enum Action {
     Landing(bool),
     QuickFlow,
     Completed,
-    ShowToast(String),
+    ShowToast(String, gtk::Widget),
 }

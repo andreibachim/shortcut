@@ -9,7 +9,7 @@ mod imp {
 
     use gtk::glib::subclass::InitializingObject;
     use gtk::glib::{self, clone, closure, Properties, Sender};
-    use gtk::prelude::{CastNone, FileExt, GObjectPropertyExpressionExt, ObjectExt};
+    use gtk::prelude::{Cast, CastNone, FileExt, GObjectPropertyExpressionExt, ObjectExt};
     use gtk::subclass::prelude::*;
     use gtk::traits::{EditableExt, WidgetExt};
     use gtk::{ClosureExpression, CompositeTemplate};
@@ -177,6 +177,12 @@ mod imp {
             self.parent_constructed();
             bind_name_preview(self);
             setup_form_validation(self);
+            self.icon_input
+                .settings()
+                .set_gtk_entry_select_on_focus(false);
+            self.exec_input
+                .settings()
+                .set_gtk_entry_select_on_focus(false);
         }
     }
 
@@ -218,7 +224,8 @@ mod imp {
                 slf.obj().set_exec(text);
                 slf.save_button.grab_focus();
             } else {
-                let _ = slf.sender.get().expect("Could not get sender").send(Action::ShowToast("The executable path is not valid".to_owned()));
+                let _ = slf.sender.get().expect("Could not get sender")
+                    .send(Action::ShowToast("The executable path is not valid".to_owned(), entry_row.clone().dynamic_cast().unwrap()));
                 entry_row.set_css_classes(&["error"]);
             }
         }));
@@ -235,7 +242,8 @@ mod imp {
                 );
                 slf.exec_input.grab_focus();
             } else {
-                let _ = slf.sender.get().expect("Could not get sender").send(Action::ShowToast("The icon path is not valid".to_owned()));
+                let _ = slf.sender.get().expect("Could not get sender")
+                    .send(Action::ShowToast("The icon path is not valid".to_owned(), entry_row.clone().dynamic_cast().unwrap()));
                 entry_row.set_css_classes(&["error"]);
             }
         }));
