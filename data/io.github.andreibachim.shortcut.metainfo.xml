@@ -43,16 +43,16 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.1.1" date="2023-08-19">
+      <description>
+        <p>Various fixes regarding around error toasts.</p>
+      </description>
+    </release>
     <release version="0.1.0" date="2023-08-19">
       <description>
         <p>Alpha version of Shortcuts. The only mode is Quick mode - which is targeted at users that
           simply want to pin a new application to their app
           launcher.</p>
-      </description>
-    </release>
-    <release version="0.1.1" date="2023-08-19">
-      <description>
-        <p>Bug fixes</p>
       </description>
     </release>
   </releases>
