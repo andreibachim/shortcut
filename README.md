@@ -11,7 +11,13 @@ Note the the app is under heavy development. I do not recommend using it unless 
 
 (It saves a new file to <code>$HOME/.local/share/applications</code>)
 
-## How to edit an already create app icon
+## How to delete an already created app icon
+```bash
+cd ~/.local/share/applications
+rm your-app-name.desktop
+```
+
+## How to edit an already created app icon
 
 ```bash
 cd ~/.local/share/applications
@@ -25,8 +31,6 @@ You can edit the detail of your application icon here, Save, logout and login ag
 <img src="https://flathub.org/assets/badges/flathub-badge-i-en.png" width="190px" />
 </a>
 
-
-There is no way to easily install the app right now, you have to build it yourself. 
 
 ### Build from source code
 
