@@ -15,9 +15,9 @@ Note the the app is under heavy development. I do not recommend using it unless 
 
 ```bash
 cd ~/.local/share/applications
-vi <your-app>.desktop
+vi your-app-name.desktop
 ```
-You can edit the detail of your application icon here, Save and exit to apply change.
+You can edit the detail of your application icon here, Save, logout and login again to apply change.
 
 ## Installing
 
