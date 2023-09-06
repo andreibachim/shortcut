@@ -11,6 +11,14 @@ Note the the app is under heavy development. I do not recommend using it unless 
 
 (It saves a new file to <code>$HOME/.local/share/applications</code>)
 
+## How to edit an already create app icon
+
+```bash
+cd ~/.local/share/applications
+vi <your-app>.desktop
+```
+You can edit the detail of your application icon here, Save and exit to apply change.
+
 ## Installing
 
 There is no way to easily install the app right now, you have to build it yourself. 
