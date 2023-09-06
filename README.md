@@ -21,6 +21,11 @@ You can edit the detail of your application icon here, Save, logout and login ag
 
 ## Installing
 
+<a href="https://flathub.org/apps/io.github.andreibachim.shortcut">
+<img src="https://flathub.org/assets/badges/flathub-badge-i-en.png" width="190px" />
+</a>
+
+
 There is no way to easily install the app right now, you have to build it yourself. 
 
 ### Build from source code
