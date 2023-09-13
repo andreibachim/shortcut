@@ -28,8 +28,8 @@
             <property name="title">Main menu</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title">Quick flow</property>
-                <property name="accelerator">&lt;alt&gt;q</property>
+                <property name="title">Create</property>
+                <property name="accelerator">&lt;alt&gt;c</property>
               </object>
             </child>
             <child>

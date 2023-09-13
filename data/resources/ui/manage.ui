@@ -8,25 +8,86 @@
     <property name="margin-start">32</property>
     <property name="margin-end">32</property>
     <child>
-      <object class="AdwPreferencesGroup" id="app_list">
+      <object class="AdwBin">
         <property name="margin-start">32</property>
-        <property name="margin-end">32</property>
+        <property name="margin-end">30</property>
+        <property name="margin-bottom">16</property>
         <property name="vexpand">true</property>
-        <property name="valign">start</property>
-        <property name="title">User apps</property>
-        <property name="description">Installed using Shortcut</property>
-        <child type="header-suffix">
+        <child>
           <object class="GtkBox">
-            <property name="valign">center</property>
-            <property name="spacing">8</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">16</property>
+            <!-- Header -->
             <child>
-              <object class="GtkLabel">
-                <property name="label">All</property>
+              <object class="GtkBox">
+                <property name="hexpand">true</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">8</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Shortcuts</property>
+                        <property name="hexpand">true</property>
+                        <property name="halign">start</property>
+                        <style>
+                          <class name="title-4"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="view_label">
+                        <property name="halign">start</property>
+                        <property name="use-markup">true</property>
+                        <property name="label">Created using this app</property>
+                        <style>
+                          <class name="dim-label" />
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                    <property name="spacing">8</property>
+                    <!-- Show all label -->
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Show all</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                    </child>
+                    <!-- Switch -->
+                    <child>
+                      <object class="GtkSwitch" id="show_all">
+                        <property name="action-name">toggle_show_all</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
+            <!-- List -->
             <child>
-              <object class="GtkSwitch" id="show_all_switch">
-                <property name="action-name">toggle_show_all</property>
+              <object class="GtkScrolledWindow">
+                <property name="vexpand">true</property>
+                <style>
+                  <class name="background"/>
+                </style>
+                <child>
+                  <object class="GtkListBox" id="app_list">
+                    <property name="selection-mode">none</property>
+                    <property name="margin-end">8</property>
+                    <property name="valign">start</property>
+                    <style>
+                      <class name="boxed-list"/>
+                    </style>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

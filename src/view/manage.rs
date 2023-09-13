@@ -1,9 +1,7 @@
 mod imp {
-    use std::cell::{OnceCell, RefCell};
+    use std::cell::OnceCell;
 
-    use adw::prelude::{
-        GtkWindowExt, MessageDialogExt, MessageDialogExtManual, PreferencesGroupExt, WidgetExt,
-    };
+    use adw::prelude::{GtkWindowExt, MessageDialogExt, MessageDialogExtManual, WidgetExt};
     use gtk::gio::Cancellable;
     use gtk::glib::subclass::InitializingObject;
     use gtk::glib::{clone, FromVariant, Sender};
@@ -19,10 +17,11 @@ mod imp {
     pub struct Manage {
         pub sender: OnceCell<Sender<Action>>,
         #[template_child]
-        pub app_list: TemplateChild<adw::PreferencesGroup>,
+        pub app_list: TemplateChild<gtk::ListBox>,
         #[template_child]
-        pub show_all_switch: TemplateChild<gtk::Switch>,
-        pub shortcuts: RefCell<Vec<gtk::Widget>>,
+        pub show_all: TemplateChild<gtk::Switch>,
+        #[template_child]
+        pub view_label: TemplateChild<gtk::Label>,
     }
 
     #[glib::object_subclass]
@@ -33,18 +32,17 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
-
             klass.install_action("back", None, |slf, _, _| {
                 let _ = slf.imp().sender.get().unwrap().send(Action::Back);
             });
-
             klass.install_action("toggle_show_all", None, |slf, _, _| {
-                let show_all = slf.imp().show_all_switch.is_active();
-                let app_list = slf.imp().app_list.get();
+                let show_all = slf.imp().show_all.get().is_active();
+                let view_label = slf.imp().view_label.get();
+
                 if show_all {
-                    app_list.set_description(Some("All"));
+                    view_label.set_label("All");
                 } else {
-                    app_list.set_description(Some("Installed using Shortcut"));
+                    view_label.set_label("Managed by <i>Shortcut</i>");
                 }
 
                 slf.load(show_all);
@@ -77,7 +75,7 @@ mod imp {
                         if decision.eq("delete") {
                             match std::fs::remove_file(path) {
                                 Ok(()) => {
-                                    slf.load(slf.imp().show_all_switch.is_active());
+                                    slf.load(false);
                                 }
                                 Err(e) => eprintln!("Could not delete file because of error {}", e),
                             }
@@ -111,12 +109,10 @@ mod imp {
 use std::path::Path;
 use std::path::PathBuf;
 
-use adw::prelude::PreferencesGroupExt;
 use adw::prelude::WidgetExt;
 use freedesktop_entry_parser::parse_entry;
 use glib::Object;
 use gtk::prelude::ActionableExtManual;
-use gtk::prelude::Cast;
 use gtk::prelude::ToVariant;
 use gtk::Builder;
 use gtk::{
@@ -137,6 +133,7 @@ impl Manage {
         let slf = Object::builder::<Self>().build();
         slf.set_sensitive(false);
         let _ = slf.imp().sender.set(sender);
+        slf.imp().view_label.set_label("Managed by <i>Shortcut</i>");
         slf
     }
 
@@ -165,13 +162,10 @@ impl Manage {
     pub fn load(&self, all: bool) {
         let imp = self.imp();
 
-        imp.show_all_switch.set_active(all);
+        imp.show_all.set_active(all);
 
-        let mut shortcuts = imp.shortcuts.borrow_mut();
-
-        //Clear the current lists
-        while !shortcuts.is_empty() {
-            imp.app_list.remove(&shortcuts.remove(0));
+        while imp.app_list.first_child().is_some() {
+            imp.app_list.remove(&imp.app_list.first_child().unwrap());
         }
 
         //Load all the item widgets in the internal list
@@ -243,12 +237,7 @@ impl Manage {
 
                 //Get the entry and add it the list
                 let entry: adw::PreferencesRow = builder.object("entry").unwrap();
-                shortcuts.push(entry.dynamic_cast::<gtk::Widget>().unwrap());
+                imp.app_list.append(&entry);
             });
-
-        //Push all the widget from the internal list into the view list
-        shortcuts.iter().for_each(|widget| {
-            imp.app_list.add(widget);
-        });
     }
 }

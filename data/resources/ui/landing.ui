@@ -54,7 +54,7 @@
                   <object class="GtkLabel">
                     <property name="margin-top">8</property>
                     <property name="margin-bottom">8</property>
-                    <property name="label">_Quick mode</property>
+                    <property name="label">_Create</property>
                     <property name="use-underline">true</property>
                   </object>
                 </child>

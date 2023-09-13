@@ -88,6 +88,7 @@ mod imp {
                             carousel.nth_page(view_index).set_sensitive(false);
                         }
                     };
+                    toast_revealer.set_reveal_child(false);
                     match action {
                         Action::Back => {
                             disable_focus_on_all_children();

@@ -53,11 +53,6 @@ mod imp {
             let old_name_binding = self.old_name.borrow();
             let old_name = old_name_binding.as_ref();
 
-            println!(
-                "old name is '{}' and the new name is '{}'",
-                old_name, data.name
-            );
-
             if !data.name.eq(old_name) {
                 let _ = std::fs::remove_file(self.get_file_path_from_name(old_name));
             }
@@ -347,6 +342,8 @@ impl QuickMode {
         imp.name_input.grab_focus();
         imp.exec_input.set_text("");
         imp.icon_input.set_text("");
+        imp.exec_input.set_css_classes(&[]);
+        imp.icon_input.set_css_classes(&[]);
         imp.icon_preview.set_child(Some(
             &gtk::Image::builder()
                 .icon_name("preview-placeholder")
