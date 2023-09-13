@@ -65,6 +65,17 @@
                     <child>
                       <object class="GtkSwitch" id="show_all">
                         <property name="action-name">toggle_show_all</property>
+                        <child>
+                          <object class='GtkShortcutController'>
+                            <property name='scope'>managed</property>
+                            <child>
+                              <object class='GtkShortcut'>
+                                <property name='trigger'>&lt;ctrl&gt;A</property>
+                                <property name='action'>activate</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
