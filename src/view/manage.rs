@@ -11,7 +11,6 @@ mod imp {
 
     use crate::component::viewport::Action;
 
-    // Object holding the state
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/github/andreibachim/shortcut/manage.ui")]
     pub struct Manage {
@@ -22,6 +21,8 @@ mod imp {
         pub show_all: TemplateChild<gtk::Switch>,
         #[template_child]
         pub view_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub filter_entry: TemplateChild<gtk::SearchEntry>,
     }
 
     #[glib::object_subclass]
@@ -106,15 +107,12 @@ mod imp {
     impl BoxImpl for Manage {}
 }
 
-use std::path::Path;
-use std::path::PathBuf;
-
+use adw::prelude::EditableExt;
 use adw::prelude::WidgetExt;
 use freedesktop_entry_parser::parse_entry;
 use glib::Object;
-use gtk::prelude::ActionableExtManual;
-use gtk::prelude::ToVariant;
-use gtk::Builder;
+use gtk::glib::clone;
+use gtk::prelude::Cast;
 use gtk::{
     glib::{self, Sender},
     subclass::prelude::ObjectSubclassIsExt,
@@ -134,29 +132,36 @@ impl Manage {
         slf.set_sensitive(false);
         let _ = slf.imp().sender.set(sender);
         slf.imp().view_label.set_label("Managed by <i>Shortcut</i>");
+        slf.setup_filter();
         slf
     }
 
-    pub fn set_icon(&self, image: &gtk::Image, icon_path: Option<&str>) {
-        if let Some(icon_path) = icon_path {
-            if PathBuf::from(icon_path).is_absolute() {
-                if Path::new(icon_path).exists() {
-                    image.set_from_file(Some(icon_path));
-                } else {
-                    self.set_placeholder_icon(image);
-                }
-            } else {
-                let themed_icon = gtk::gio::ThemedIcon::from_names(&[icon_path]);
-                image.set_gicon(Some(&themed_icon));
-            }
-        } else {
-            self.set_placeholder_icon(image);
-        };
+    fn setup_filter(&self) {
+        let app_list = self.imp().app_list.get();
+        self.imp().filter_entry.connect_changed(
+            clone!(@weak app_list, @weak self as slf => move |filter_entry| {
+                let filter_criteria = filter_entry.text();
+                slf.filter(app_list, &filter_criteria)
+            }),
+        );
     }
 
-    pub fn set_placeholder_icon(&self, image: &gtk::Image) {
-        let themed_icon = gtk::gio::ThemedIcon::from_names(&["application-x-executable"]);
-        image.set_gicon(Some(&themed_icon));
+    fn filter(&self, app_list: gtk::ListBox, filter_criteria: &str) {
+        for app in app_list.observe_children().into_iter() {
+            let app = app
+                .unwrap()
+                .dynamic_cast::<crate::component::Entry>()
+                .unwrap();
+            if !app
+                .get_name()
+                .to_lowercase()
+                .contains(filter_criteria.to_lowercase().as_str())
+            {
+                app.set_visible(false);
+            } else {
+                app.set_visible(true);
+            }
+        }
     }
 
     pub fn load(&self, all: bool) {
@@ -193,51 +198,15 @@ impl Manage {
             })
             .for_each(|(dir_entry, desktop)| {
                 let section = desktop.section("Desktop Entry");
-
-                let builder =
-                    Builder::from_resource("/io/github/andreibachim/shortcut/component/entry.ui");
-
-                //Title
-                let name = section.attr("Name").unwrap_or("");
-                builder
-                    .object::<gtk::Label>("title")
-                    .unwrap()
-                    .set_label(name);
-                //Subtitle
-                let subtitle = builder.object::<gtk::Label>("subtitle").unwrap();
-                let subtitle_text = dir_entry.path().display().to_string();
-                subtitle.set_label(&format!("<small>{}</small>", subtitle_text.trim()));
-                subtitle.set_tooltip_text(Some(subtitle_text.trim()));
-
-                let icon_path = section.attr("Icon");
-
-                self.set_icon(
-                    &builder.object::<gtk::Image>("app_icon").unwrap(),
-                    icon_path,
+                let entry = crate::component::Entry::new(
+                    section.attr("Name"),
+                    dir_entry.path().to_str(),
+                    section.attr("Icon"),
+                    section.attr("Exec"),
                 );
-
-                //Delete button
-                builder
-                    .object::<gtk::Button>("delete_button")
-                    .unwrap()
-                    .set_action_target(Some(&(subtitle_text.trim(), name).to_variant()));
-
-                //Edit button
-                builder
-                    .object::<gtk::Button>("edit_button")
-                    .unwrap()
-                    .set_action_target(Some(
-                        &(
-                            name,
-                            section.attr("Icon").unwrap_or(""),
-                            section.attr("Exec").unwrap_or(""),
-                        )
-                            .to_variant(),
-                    ));
-
-                //Get the entry and add it the list
-                let entry: adw::PreferencesRow = builder.object("entry").unwrap();
                 imp.app_list.append(&entry);
             });
+
+        self.filter(imp.app_list.get(), &imp.filter_entry.text())
     }
 }

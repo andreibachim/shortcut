@@ -3,7 +3,7 @@
   <template class="Manage" parent="GtkBox">
     <property name="orientation">vertical</property>
     <property name="vexpand">true</property>
-    <property name="margin-top">64</property>
+    <property name="margin-top">16</property>
     <property name="margin-bottom">16</property>
     <property name="margin-start">32</property>
     <property name="margin-end">32</property>
@@ -16,7 +16,7 @@
         <child>
           <object class="GtkBox">
             <property name="orientation">vertical</property>
-            <property name="spacing">16</property>
+            <property name="spacing">24</property>
             <!-- Header -->
             <child>
               <object class="GtkBox">
@@ -69,6 +69,12 @@
                     </child>
                   </object>
                 </child>
+              </object>
+            </child>
+            <!-- Filter -->
+            <child>
+              <object class="GtkSearchEntry" id="filter_entry">
+                <property name="placeholder-text">Filter by name</property>
               </object>
             </child>
             <!-- List -->

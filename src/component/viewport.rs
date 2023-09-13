@@ -104,8 +104,8 @@ mod imp {
                         Action::QuickFlow(name, icon_path, exec_path) => {
                             disable_focus_on_all_children();
                             quick_mode_view.clear_data();
-                            quick_mode_view.edit_details(name, 
-                                icon_path, 
+                            quick_mode_view.edit_details(name,
+                                icon_path,
                                 exec_path);
                             quick_mode_view.set_sensitive(true);
                             carousel.reorder(&quick_mode_view, (carousel.position() + 1f64) as i32);

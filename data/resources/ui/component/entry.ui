@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <object class="AdwPreferencesRow" id="entry">
+  <template class="Entry" parent="AdwPreferencesRow">
     <child>
       <object class="GtkBox">
         <property name="margin-top">8</property>
@@ -26,12 +26,14 @@
                 <!-- Title -->
                 <child>
                   <object class="GtkLabel" id="title">
+                    <property name="label">Hello</property>
                     <property name="halign">start</property>
                   </object>
                 </child>
                 <!-- Subtitle -->
                 <child>
                   <object class="GtkLabel" id="subtitle">
+                    <property name="label">World</property>
                     <property name="halign">start</property>
                     <property name="overflow">hidden</property>
                     <property name="ellipsize">middle</property>
@@ -67,12 +69,10 @@
             <property name="tooltip-text">Edit</property>
             <style>
               <class name="flat"/>
-              <!-- <class name="suggested-action"/> -->
-              <!-- <class name="suggested-action"/> -->
             </style>
           </object>
         </child>
       </object>
     </child>
-  </object>
+  </template>
 </interface>
