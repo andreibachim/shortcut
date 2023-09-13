@@ -32,6 +32,12 @@
                 <property name="accelerator">&lt;alt&gt;q</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title">Manage</property>
+                <property name="accelerator">&lt;alt&gt;m</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

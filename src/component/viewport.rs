@@ -73,6 +73,8 @@ mod imp {
             carousel.append(&quick_mode_view);
             let completed_view = crate::view::Completed::new(sender.clone());
             carousel.append(&completed_view);
+            let manage_view = crate::view::Manage::new(sender.clone());
+            carousel.append(&manage_view);
 
             receiver.borrow_mut().take().unwrap().attach(
                 None,
@@ -87,16 +89,25 @@ mod imp {
                         }
                     };
                     match action {
+                        Action::Back => {
+                            disable_focus_on_all_children();
+                            let previous_view = carousel.nth_page((carousel.position() as u32) - 1);
+                            previous_view.set_sensitive(true);
+                            carousel.scroll_to(&previous_view, true);
+                        }
                         Action::Landing(scroll) => {
                             disable_focus_on_all_children();
                             landing_view.set_sensitive(true);
                             carousel.scroll_to(&landing_view, scroll);
                         },
-                        Action::QuickFlow => {
+                        Action::QuickFlow(name, icon_path, exec_path) => {
                             disable_focus_on_all_children();
                             quick_mode_view.clear_data();
+                            quick_mode_view.edit_details(name, 
+                                icon_path, 
+                                exec_path);
                             quick_mode_view.set_sensitive(true);
-                            carousel.reorder(&quick_mode_view, 1);
+                            carousel.reorder(&quick_mode_view, (carousel.position() + 1f64) as i32);
                             carousel.scroll_to(&quick_mode_view, true);
                         },
                         Action::Completed => {
@@ -105,8 +116,14 @@ mod imp {
                             carousel.reorder(&completed_view, (carousel.position() + 1.0) as i32);
                             carousel.scroll_to(&completed_view, true);
                         },
+                        Action::Manage => {
+                            disable_focus_on_all_children();
+                            manage_view.set_sensitive(true);
+                            carousel.reorder(&manage_view, 1);
+                            manage_view.load(false);
+                            carousel.scroll_to(&manage_view, true);
+                        },
                         Action::ShowToast(toast, widget) => {
-
                             toast_revealer.child().and_dynamic_cast::<gtk::CenterBox>()
                                 .expect("Child of toast revelear is not a GtkCenterBox")
                                 .end_widget().and_dynamic_cast::<gtk::Button>().expect("End child of revealer box is not a GtkButton")
@@ -164,7 +181,9 @@ impl Default for Viewport {
 }
 pub enum Action {
     Landing(bool),
-    QuickFlow,
+    Back,
+    QuickFlow(Option<String>, Option<String>, Option<String>),
     Completed,
+    Manage,
     ShowToast(String, gtk::Widget),
 }

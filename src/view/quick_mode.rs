@@ -3,7 +3,7 @@ mod imp {
 
     use std::fs::File;
     use std::io::Write;
-    use std::path::Path;
+    use std::path::{Path, PathBuf};
 
     use adw::traits::{BinExt, EntryRowExt};
 
@@ -25,7 +25,10 @@ mod imp {
         #[property(name = "exec", get, set, type = String, member = exec)]
         #[property(name = "icon", get, set, type = String, member = icon)]
         pub data: RefCell<Desktop>,
+
+        pub old_name: RefCell<String>,
         pub sender: OnceCell<Sender<Action>>,
+
         #[template_child]
         pub cancel_button: TemplateChild<gtk::Button>,
         #[template_child]
@@ -47,6 +50,18 @@ mod imp {
         #[template_callback]
         fn save(&self) {
             let data = self.data.borrow();
+            let old_name_binding = self.old_name.borrow();
+            let old_name = old_name_binding.as_ref();
+
+            println!(
+                "old name is '{}' and the new name is '{}'",
+                old_name, data.name
+            );
+
+            if !data.name.eq(old_name) {
+                let _ = std::fs::remove_file(self.get_file_path_from_name(old_name));
+            }
+
             let file_path = gtk::glib::home_dir().join(format!(
                 ".local/share/applications/{}.desktop",
                 data.name.replace(' ', "-").to_lowercase()
@@ -63,6 +78,13 @@ mod imp {
                 .get()
                 .expect("Could not get sender")
                 .send(Action::Completed);
+        }
+
+        fn get_file_path_from_name(&self, name: &str) -> PathBuf {
+            gtk::glib::home_dir().join(format!(
+                ".local/share/applications/{}.desktop",
+                name.replace(' ', "-").to_lowercase()
+            ))
         }
     }
 
@@ -89,12 +111,7 @@ mod imp {
             });
 
             klass.install_action("cancel", None, move |quick_mode, _, _| {
-                let _ = quick_mode
-                    .imp()
-                    .sender
-                    .get()
-                    .unwrap()
-                    .send(Action::Landing(true));
+                let _ = quick_mode.imp().sender.get().unwrap().send(Action::Back);
             });
 
             klass.install_action("pick_exec", None, move |quick_mode, _, _| {
@@ -212,6 +229,7 @@ mod imp {
     fn setup_form_validation(slf: &QuickMode) {
         slf.name_input
             .bind_property("text", slf.obj().as_ref(), "name")
+            .bidirectional()
             .sync_create()
             .build();
 
@@ -275,6 +293,7 @@ use adw::traits::BinExt;
 use glib::Object;
 use gtk::{
     glib::{self, Sender},
+    prelude::ObjectExt,
     subclass::prelude::ObjectSubclassIsExt,
     traits::{EditableExt, WidgetExt},
 };
@@ -295,8 +314,35 @@ impl QuickMode {
         slf
     }
 
+    pub fn edit_details(
+        &self,
+        name: Option<String>,
+        icon_path: Option<String>,
+        exec_path: Option<String>,
+    ) {
+        if let Some(name) = name {
+            *self.imp().old_name.borrow_mut() = name.clone();
+            self.set_name(name);
+        }
+
+        if let Some(icon_path) = icon_path {
+            if !icon_path.is_empty() {
+                self.imp().icon_input.set_text(&icon_path);
+                self.imp().icon_input.emit_by_name::<()>("apply", &[]);
+            }
+        }
+
+        if let Some(exec_path) = exec_path {
+            if !exec_path.is_empty() {
+                self.imp().exec_input.set_text(&exec_path);
+                self.imp().exec_input.emit_by_name::<()>("apply", &[]);
+            }
+        }
+    }
+
     pub fn clear_data(&self) {
         let imp = self.imp();
+        *imp.old_name.borrow_mut() = "".to_owned();
         imp.name_input.set_text("");
         imp.name_input.grab_focus();
         imp.exec_input.set_text("");
