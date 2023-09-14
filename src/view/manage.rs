@@ -191,7 +191,8 @@ impl Manage {
         }
 
         //Load all the item widgets in the internal list
-        let paths = std::fs::read_dir(gtk::glib::user_data_dir().join("applications")).unwrap();
+        let paths =
+            std::fs::read_dir(gtk::glib::home_dir().join(".local/share/applications")).unwrap();
         paths
             .into_iter()
             .filter_map(|entry_result| entry_result.ok())
