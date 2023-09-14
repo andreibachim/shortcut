@@ -9,8 +9,7 @@
   <description>
     <p>
       Shortcut is a tool that allows users to quickly pin executable files to their app launcher for
-      quick
-      access.
+      quick access.
 
       It guides users throught the process by providing file picker dialogs with relevant filters,
       input validation, and name and icon previews.
@@ -41,8 +40,18 @@
         https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot3.png</image>
       <caption>Dark mode with filled form</caption>
     </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot4.png</image>
+      <caption>Manage mode list</caption>
+    </screenshot>
   </screenshots>
   <releases>
+    <release version="0.2.0" date="2023-09-14">
+      <description>
+        <p>Added 'Manage' mode to delete and edit shortcuts.</p>
+      </description>
+    </release>
     <release version="0.1.2" date="2023-08-19">
       <description>
         <p>Bug fixed for flathub build.</p>
