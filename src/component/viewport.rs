@@ -103,6 +103,7 @@ mod imp {
                         },
                         Action::QuickFlow(name, icon_path, exec_path) => {
                             disable_focus_on_all_children();
+
                             quick_mode_view.clear_data();
                             quick_mode_view.edit_details(name,
                                 icon_path,

@@ -69,7 +69,7 @@ impl Entry {
         let icon_path_str = icon_path.unwrap_or("");
         let exec_path_str = exec_path.unwrap_or("");
 
-        crate::function::set_icon(&imp.app_icon.get(), icon_path);
+        let _ = crate::function::set_icon(&imp.app_icon.get(), icon_path, true);
 
         imp.title.set_label(title.unwrap_or(""));
         imp.subtitle

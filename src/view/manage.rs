@@ -33,6 +33,7 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+
             klass.install_action("back", None, |slf, _, _| {
                 let _ = slf.imp().sender.get().unwrap().send(Action::Back);
             });
@@ -137,6 +138,22 @@ impl Manage {
     }
 
     fn setup_filter(&self) {
+        let filter_entry = self.imp().filter_entry.get();
+        let action = gtk::CallbackAction::new(|filter_entry, _| {
+            filter_entry.grab_focus();
+            true
+        });
+        let trigger = gtk::ShortcutTrigger::parse_string("<ctrl>F").unwrap();
+        let shortcut = gtk::Shortcut::builder()
+            .action(&action)
+            .trigger(&trigger)
+            .build();
+
+        let shortcut_controller = gtk::ShortcutController::new();
+        shortcut_controller.set_scope(gtk::ShortcutScope::Managed);
+        shortcut_controller.add_shortcut(shortcut);
+        filter_entry.add_controller(shortcut_controller);
+
         let app_list = self.imp().app_list.get();
         self.imp().filter_entry.connect_changed(
             clone!(@weak app_list, @weak self as slf => move |filter_entry| {

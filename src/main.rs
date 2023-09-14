@@ -22,8 +22,8 @@ fn main() -> gtk::glib::ExitCode {
 fn build_window(app: &adw::Application) {
     adw::ApplicationWindow::builder()
         .application(app)
-        .default_width(600)
-        .default_height(700)
+        .default_width(825)
+        .default_height(785)
         .content(&build_content())
         .icon_name(APP_ID)
         .title("Shortcut")

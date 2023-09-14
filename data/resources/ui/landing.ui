@@ -39,7 +39,7 @@
     <!-- The menu -->
     <child>
       <object class="AdwClamp">
-        <property name="maximum-size">240</property>
+        <property name="maximum-size">320</property>
         <child>
           <object class="GtkBox">
             <property name="orientation">vertical</property>

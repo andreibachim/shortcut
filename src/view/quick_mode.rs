@@ -13,6 +13,7 @@ mod imp {
     use gtk::subclass::prelude::*;
     use gtk::traits::{EditableExt, WidgetExt};
     use gtk::{ClosureExpression, CompositeTemplate};
+    use which::which;
 
     use crate::component::viewport::Action;
     use crate::model::Desktop;
@@ -228,38 +229,40 @@ mod imp {
             .sync_create()
             .build();
 
-        slf.exec_input
-        .connect_apply(clone!(@weak slf => move |entry_row| {
+        slf.exec_input.connect_apply(clone!(@weak slf => move |entry_row| {
             let text = entry_row.text();
             let path = Path::new(&text);
-            if path.exists() && path.is_file() {
-                entry_row.set_css_classes(&[]);
-                slf.obj().set_exec(text);
-                slf.save_button.grab_focus();
-            } else {
-                let _ = slf.sender.get().expect("Could not get sender")
-                    .send(Action::ShowToast("The executable path is not valid".to_owned(), entry_row.clone().dynamic_cast().unwrap()));
-                entry_row.set_css_classes(&["error"]);
+            let is_in_path = which(&text).is_ok();
+            if PathBuf::from(&text).is_absolute() || is_in_path {
+                if (path.exists() && path.is_file()) || is_in_path {
+                    entry_row.set_css_classes(&[]);
+                    slf.obj().set_exec(text);
+                    slf.save_button.grab_focus();
+                } else {
+                    let _ = slf.sender.get().expect("Could not get sender")
+                        .send(Action::ShowToast("The executable path is not valid".to_owned(), entry_row.clone().dynamic_cast().unwrap()));
+                    entry_row.set_css_classes(&["error"]);
+                }
             }
         }));
 
         slf.icon_input
-        .connect_apply(clone!(@weak slf => move |entry_row| {
-            let text = entry_row.text();
-            let path = Path::new(&text);
-            if path.exists() && path.is_file() {
-                entry_row.set_css_classes(&[]);
-                slf.obj().set_icon(text);
-                slf.icon_preview.set_child(
-                    Some(&gtk::Image::builder().file(entry_row.text()).pixel_size(128).css_classes(vec!["icon-dropshadow"]).build())
-                );
-                slf.exec_input.grab_focus();
-            } else {
-                let _ = slf.sender.get().expect("Could not get sender")
-                    .send(Action::ShowToast("The icon path is not valid".to_owned(), entry_row.clone().dynamic_cast().unwrap()));
-                entry_row.set_css_classes(&["error"]);
-            }
-        }));
+            .connect_apply(clone!(@weak slf => move |entry_row| {
+                let text = entry_row.text();
+                let image = slf.icon_preview.child().and_dynamic_cast::<gtk::Image>().unwrap();
+
+                match crate::function::set_icon(&image, Some(&text), false) {
+                    Err(_) => {
+                        let _ = slf.sender.get().expect("Could not get sender")
+                            .send(Action::ShowToast("The icon path is not valid".to_owned(), entry_row.clone().dynamic_cast().unwrap()));
+                        entry_row.set_css_classes(&["error"]);
+                    },
+                    Ok(_) => {
+                        slf.obj().set_icon(text);
+                        slf.exec_input.grab_focus();
+                    }
+                }
+            }));
 
         let name_expression = slf.obj().property_expression("name");
         let exec_expression = slf.obj().property_expression("exec");
@@ -338,12 +341,19 @@ impl QuickMode {
     pub fn clear_data(&self) {
         let imp = self.imp();
         *imp.old_name.borrow_mut() = "".to_owned();
-        imp.name_input.set_text("");
-        imp.name_input.grab_focus();
+        self.set_name("");
+        imp.name_input.get().delete_text(0, -1);
+
         imp.exec_input.set_text("");
-        imp.icon_input.set_text("");
+        self.set_exec("");
         imp.exec_input.set_css_classes(&[]);
+
+        imp.icon_input.set_text("");
+        self.set_icon("");
         imp.icon_input.set_css_classes(&[]);
+
+        imp.name_input.grab_focus();
+
         imp.icon_preview.set_child(Some(
             &gtk::Image::builder()
                 .icon_name("preview-placeholder")

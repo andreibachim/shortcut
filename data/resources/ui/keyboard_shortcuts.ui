@@ -5,7 +5,7 @@
     <child>
       <object class="GtkShortcutsSection">
         <property name="section-name">shortcuts</property>
-        <property name="max-height">10</property>
+        <property name="max-height">8</property>
         <child>
           <object class="GtkShortcutsGroup">
             <property name="title">General</property>
@@ -42,7 +42,7 @@
         </child>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title">Quick mode</property>
+            <property name="title">Create</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title">Cancel</property>
@@ -53,6 +53,23 @@
               <object class="GtkShortcutsShortcut">
                 <property name="title">Save</property>
                 <property name="accelerator">&lt;alt&gt;s</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title">Manage</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title">Toggle show all</property>
+                <property name="accelerator">&lt;ctrl&gt;a</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title">Search</property>
+                <property name="accelerator">&lt;ctrl&gt;f</property>
               </object>
             </child>
           </object>
