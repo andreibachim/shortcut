@@ -101,11 +101,6 @@ mod imp {
             klass.bind_template();
             klass.bind_template_callbacks();
 
-            klass.install_action("back", None, move |quick_mode, _, _| {
-                let imp = quick_mode.imp();
-                let _ = imp.sender.get().unwrap().send(Action::Landing(true));
-            });
-
             klass.install_action("cancel", None, move |quick_mode, _, _| {
                 let _ = quick_mode.imp().sender.get().unwrap().send(Action::Back);
             });

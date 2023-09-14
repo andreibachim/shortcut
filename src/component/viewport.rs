@@ -103,27 +103,26 @@ mod imp {
                         },
                         Action::QuickFlow(name, icon_path, exec_path) => {
                             disable_focus_on_all_children();
-
+                            quick_mode_view.set_sensitive(true);
+                            carousel.reorder(&quick_mode_view, (carousel.position() as i32) + 1);
                             quick_mode_view.clear_data();
                             quick_mode_view.edit_details(name,
                                 icon_path,
                                 exec_path);
-                            quick_mode_view.set_sensitive(true);
-                            carousel.reorder(&quick_mode_view, (carousel.position() + 1f64) as i32);
                             carousel.scroll_to(&quick_mode_view, true);
                         },
                         Action::Completed => {
                             disable_focus_on_all_children();
                             completed_view.set_sensitive(true);
-                            carousel.reorder(&completed_view, (carousel.position() + 1.0) as i32);
+                            carousel.reorder(&completed_view, (carousel.position() as i32) + 1);
                             carousel.scroll_to(&completed_view, true);
                         },
                         Action::Manage => {
                             disable_focus_on_all_children();
                             manage_view.set_sensitive(true);
                             carousel.reorder(&manage_view, (carousel.position() as i32) + 1);
-                            manage_view.load(false);
                             carousel.scroll_to(&manage_view, true);
+                            manage_view.load(false);
                         },
                         Action::ShowToast(toast, widget) => {
                             toast_revealer.child().and_dynamic_cast::<gtk::CenterBox>()
