@@ -5,26 +5,6 @@
 Shortcut is an desktop app made using Rust, GTK4 and Libadawaita that can easily create <code>.desktop</code> files. 
 It is specifically designed to visually integrate with the GNOME desktop environment. 
 
-## WIP Notice
-
-Note the the app is under heavy development. I do not recommend using it unless you understand what it does.
-
-(It saves a new file to <code>$HOME/.local/share/applications</code>)
-
-## How to delete an already created app icon
-```bash
-cd ~/.local/share/applications
-rm your-app-name.desktop
-```
-
-## How to edit an already created app icon
-
-```bash
-cd ~/.local/share/applications
-vi your-app-name.desktop
-```
-You can edit the detail of your application icon here, Save, logout and login again to apply change.
-
 ## Installing
 
 <a href="https://flathub.org/apps/io.github.andreibachim.shortcut">
