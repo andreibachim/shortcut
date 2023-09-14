@@ -44,7 +44,9 @@
             <property name="vexpand">true</property>
             <property name="valign">start</property>
             <property name="margin-bottom">48</property>
-            <property name="maximum-size">480</property>
+            <property name="margin-start">64</property>
+            <property name="margin-end">64</property>
+            <property name="maximum-size">640</property>
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>

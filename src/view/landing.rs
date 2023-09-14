@@ -25,7 +25,16 @@ mod imp {
 
             klass.install_action("quick_mode", None, move |landing, _, _| {
                 let imp = landing.imp();
-                let _ = imp.sender.get().unwrap().send(Action::QuickFlow);
+                let _ = imp
+                    .sender
+                    .get()
+                    .unwrap()
+                    .send(Action::QuickFlow(None, None, None));
+            });
+
+            klass.install_action("manage_mode", None, move |landing, _, _| {
+                let imp = landing.imp();
+                let _ = imp.sender.get().unwrap().send(Action::Manage);
             });
         }
         fn instance_init(obj: &InitializingObject<Self>) {

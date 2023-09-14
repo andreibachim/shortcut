@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="Manage" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="vexpand">true</property>
+    <property name="margin-top">16</property>
+    <property name="margin-bottom">16</property>
+    <property name="margin-start">32</property>
+    <property name="margin-end">32</property>
+    <child>
+      <object class="AdwBin">
+        <property name="margin-start">32</property>
+        <property name="margin-end">30</property>
+        <property name="margin-bottom">16</property>
+        <property name="vexpand">true</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">24</property>
+            <!-- Header -->
+            <child>
+              <object class="GtkBox">
+                <property name="hexpand">true</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">8</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Shortcuts</property>
+                        <property name="hexpand">true</property>
+                        <property name="halign">start</property>
+                        <style>
+                          <class name="title-4"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="view_label">
+                        <property name="halign">start</property>
+                        <property name="use-markup">true</property>
+                        <property name="label">Created using this app</property>
+                        <style>
+                          <class name="dim-label" />
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                    <property name="spacing">8</property>
+                    <!-- Show all label -->
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Show all</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                    </child>
+                    <!-- Switch -->
+                    <child>
+                      <object class="GtkSwitch" id="show_all">
+                        <property name="action-name">toggle_show_all</property>
+                        <child>
+                          <object class='GtkShortcutController'>
+                            <property name='scope'>managed</property>
+                            <child>
+                              <object class='GtkShortcut'>
+                                <property name='trigger'>&lt;ctrl&gt;A</property>
+                                <property name='action'>activate</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <!-- Filter -->
+            <child>
+              <object class="GtkSearchEntry" id="filter_entry">
+                <property name="placeholder-text">Filter by name</property>
+              </object>
+            </child>
+            <!-- List -->
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="vexpand">true</property>
+                <style>
+                  <class name="background"/>
+                </style>
+                <child>
+                  <object class="GtkListBox" id="app_list">
+                    <property name="selection-mode">none</property>
+                    <property name="margin-end">8</property>
+                    <property name="valign">start</property>
+                    <style>
+                      <class name="boxed-list"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkGrid">
+        <property name="valign">end</property>
+        <property name="column-homogeneous">true</property>
+        <style>
+          <class name="toolbar"/>
+          <class name="osd"/>
+        </style>
+        <child>
+          <object class="GtkButton">
+            <property name="use-underline">true</property>
+            <property name="label">_Back</property>
+            <property name="action-name">back</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <style>
+              <class name="spacer" />
+            </style>
+            <layout>
+              <property name="column">1</property>
+              <property name="column-span">3</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

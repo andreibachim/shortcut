@@ -39,7 +39,7 @@
     <!-- The menu -->
     <child>
       <object class="AdwClamp">
-        <property name="maximum-size">240</property>
+        <property name="maximum-size">320</property>
         <child>
           <object class="GtkBox">
             <property name="orientation">vertical</property>
@@ -54,7 +54,20 @@
                   <object class="GtkLabel">
                     <property name="margin-top">8</property>
                     <property name="margin-bottom">8</property>
-                    <property name="label">_Quick mode</property>
+                    <property name="label">_Create</property>
+                    <property name="use-underline">true</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="action-name">manage_mode</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="margin-top">8</property>
+                    <property name="margin-bottom">8</property>
+                    <property name="label">_Manage</property>
                     <property name="use-underline">true</property>
                   </object>
                 </child>

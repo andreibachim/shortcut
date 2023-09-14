@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="Entry" parent="AdwPreferencesRow">
+    <child>
+      <object class="GtkBox">
+        <property name="margin-top">8</property>
+        <property name="margin-bottom">8</property>
+        <property name="margin-start">8</property>
+        <property name="margin-end">8</property>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">16</property>
+            <property name="hexpand">true</property>
+            <!-- App Icon -->
+            <child>
+              <object class="GtkImage" id="app_icon">
+                <property name="pixel_size">48</property>
+              </object>
+            </child>
+            <!-- App details -->
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">4</property>
+                <property name="valign">center</property>
+                <!-- Title -->
+                <child>
+                  <object class="GtkLabel" id="title">
+                    <property name="label">Hello</property>
+                    <property name="halign">start</property>
+                  </object>
+                </child>
+                <!-- Subtitle -->
+                <child>
+                  <object class="GtkLabel" id="subtitle">
+                    <property name="label">World</property>
+                    <property name="halign">start</property>
+                    <property name="overflow">hidden</property>
+                    <property name="ellipsize">middle</property>
+                    <property name="use-markup">true</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="delete_button">
+            <property name="valign">center</property>
+            <property name="margin-start">8</property>
+            <property name="icon-name">user-trash-symbolic</property>
+            <property name="action-name">delete</property>
+            <property name="tooltip-text">Delete</property>
+            <style>
+              <class name="flat"/>
+              <class name="error"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="edit_button">
+            <property name="valign">center</property>
+            <property name="margin-start">8</property>
+            <property name="icon-name">go-next-symbolic</property>
+            <property name="action-name">edit</property>
+            <property name="tooltip-text">Edit</property>
+            <style>
+              <class name="flat"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

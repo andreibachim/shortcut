@@ -20,6 +20,12 @@
       alias="quick_mode.ui">resources/ui/quick_mode.ui</file>
     <file compressed="true"
       preprocess="xml-stripblanks"
+      alias="manage.ui">resources/ui/manage.ui</file>
+    <file compressed="true"
+      preprocess="xml-stripblanks"
       alias="component/viewport.ui">resources/ui/component/viewport.ui</file>
+    <file compressed="true"
+      preprocess="xml-stripblanks"
+      alias="component/entry.ui">resources/ui/component/entry.ui</file>
   </gresource>
 </gresources>
