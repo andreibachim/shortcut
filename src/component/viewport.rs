@@ -121,7 +121,7 @@ mod imp {
                         Action::Manage => {
                             disable_focus_on_all_children();
                             manage_view.set_sensitive(true);
-                            carousel.reorder(&manage_view, 1);
+                            carousel.reorder(&manage_view, (carousel.position() as i32) + 1);
                             manage_view.load(false);
                             carousel.scroll_to(&manage_view, true);
                         },
