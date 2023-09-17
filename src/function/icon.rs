@@ -17,7 +17,11 @@ pub fn set_icon(
             }
         } else {
             let themed_icon = gtk::gio::ThemedIcon::from_names(&[icon_path]);
-            image.set_gicon(Some(&themed_icon));
+            if gtk::IconTheme::default().has_gicon(&themed_icon) {
+                image.set_gicon(Some(&themed_icon));
+            } else {
+                return Err(anyhow!("The relative path does not point to any icon"));
+            }
         }
     } else if use_placeholder {
         set_placeholder_icon(image);

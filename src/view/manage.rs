@@ -79,7 +79,11 @@ mod imp {
                                 Ok(()) => {
                                     slf.load(false);
                                 }
-                                Err(e) => eprintln!("Could not delete file because of error {}", e),
+                                Err(e) => {
+                                    eprintln!("Following error occurred when trying to delete the file:  {}", e);
+                                    let _ = slf.imp().sender.get().unwrap().send(Action::ShowToast(
+                                        "Could not delete file".to_owned(), None));
+                                },
                             }
                         }
                     }),

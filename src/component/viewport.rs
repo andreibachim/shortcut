@@ -94,34 +94,44 @@ mod imp {
                             disable_focus_on_all_children();
                             let previous_view = carousel.nth_page((carousel.position() as u32) - 1);
                             previous_view.set_sensitive(true);
-                            carousel.scroll_to(&previous_view, true);
+                            gtk::glib::idle_add_local_once(clone!(@weak carousel, @weak previous_view => move || {
+                                carousel.scroll_to(&previous_view, true);
+                            }));     
                         }
                         Action::Landing(scroll) => {
                             disable_focus_on_all_children();
                             landing_view.set_sensitive(true);
-                            carousel.scroll_to(&landing_view, scroll);
+                            gtk::glib::idle_add_local_once(clone!(@weak carousel, @weak landing_view => move || {
+                                carousel.scroll_to(&landing_view, scroll);
+                            }));
                         },
                         Action::QuickFlow(name, icon_path, exec_path) => {
                             disable_focus_on_all_children();
-                            quick_mode_view.set_sensitive(true);
-                            carousel.reorder(&quick_mode_view, (carousel.position() as i32) + 1);
                             quick_mode_view.clear_data();
                             quick_mode_view.edit_details(name,
                                 icon_path,
                                 exec_path);
-                            carousel.scroll_to(&quick_mode_view, true);
+                            quick_mode_view.set_sensitive(true);
+                            carousel.reorder(&quick_mode_view, (carousel.position() as i32) + 1);
+                            gtk::glib::idle_add_local_once(clone!(@weak carousel, @weak quick_mode_view => move || {
+                                carousel.scroll_to(&quick_mode_view, true);
+                            }));
                         },
                         Action::Completed => {
                             disable_focus_on_all_children();
                             completed_view.set_sensitive(true);
                             carousel.reorder(&completed_view, (carousel.position() as i32) + 1);
-                            carousel.scroll_to(&completed_view, true);
+                            gtk::glib::idle_add_local_once(clone!(@weak carousel, @weak completed_view => move || {
+                                carousel.scroll_to(&completed_view, true);
+                            }));
                         },
                         Action::Manage => {
                             disable_focus_on_all_children();
                             manage_view.set_sensitive(true);
                             carousel.reorder(&manage_view, (carousel.position() as i32) + 1);
-                            carousel.scroll_to(&manage_view, true);
+                            gtk::glib::idle_add_local_once(clone!(@weak carousel, @weak manage_view => move || {
+                                carousel.scroll_to(&manage_view, true);
+                            }));
                             manage_view.load(false);
                         },
                         Action::ShowToast(toast, widget) => {
@@ -129,7 +139,9 @@ mod imp {
                                 .expect("Child of toast revelear is not a GtkCenterBox")
                                 .end_widget().and_dynamic_cast::<gtk::Button>().expect("End child of revealer box is not a GtkButton")
                                 .connect_clicked(move |_| {
-                                    widget.grab_focus();
+                                    if let Some(widget) = &widget {
+                                        widget.grab_focus();
+                                    }
                                 });
 
                             let current_time = gtk::glib::real_time();
@@ -138,7 +150,7 @@ mod imp {
                             let (sender, receiver) = gtk::glib::MainContext::channel(gtk::glib::Priority::default());
 
                             gtk::gio::spawn_blocking(clone!(@strong sender => move || {
-                                std::thread::sleep(Duration::from_secs(4));
+                                std::thread::sleep(Duration::from_secs(3));
                                 let _ = sender.send(());
                             }));
 
@@ -186,5 +198,5 @@ pub enum Action {
     QuickFlow(Option<String>, Option<String>, Option<String>),
     Completed,
     Manage,
-    ShowToast(String, gtk::Widget),
+    ShowToast(String, Option<gtk::Widget>),
 }
