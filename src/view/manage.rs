@@ -18,9 +18,9 @@ mod imp {
         #[template_child]
         pub app_list: TemplateChild<gtk::ListBox>,
         #[template_child]
-        pub show_all: TemplateChild<gtk::Switch>,
+        pub list_window: TemplateChild<gtk::ScrolledWindow>,
         #[template_child]
-        pub view_label: TemplateChild<gtk::Label>,
+        pub status_page: TemplateChild<adw::StatusPage>,
         #[template_child]
         pub filter_entry: TemplateChild<gtk::SearchEntry>,
     }
@@ -37,18 +37,7 @@ mod imp {
             klass.install_action("back", None, |slf, _, _| {
                 let _ = slf.imp().sender.get().unwrap().send(Action::Back);
             });
-            klass.install_action("toggle_show_all", None, |slf, _, _| {
-                let show_all = slf.imp().show_all.get().is_active();
-                let view_label = slf.imp().view_label.get();
 
-                if show_all {
-                    view_label.set_label("All");
-                } else {
-                    view_label.set_label("Managed by <i>Shortcut</i>");
-                }
-
-                slf.load(show_all);
-            });
             klass.install_action("delete", Some("(ss)"), |slf, _, param| {
                 let (path, name) = <(String, String)>::from_variant(param.unwrap()).unwrap();
 
@@ -56,20 +45,20 @@ mod imp {
                 let window = binding.and_dynamic_cast_ref::<gtk::Window>().unwrap();
 
                 let confirm_dialog = adw::MessageDialog::builder()
-                    .heading("Delete")
-                    .body(format!(
-                        "Are you sure you want to delete the '{}' shortcut?",
-                        name
-                    ))
-                    .default_response("cancel")
-                    .close_response("cancel")
-                    .modal(true)
-                    .transient_for(window)
-                    .build();
+                .heading("Delete")
+                .body(format!(
+                    "Are you sure you want to delete the '{}' shortcut?",
+                    name
+                ))
+                .default_response("cancel")
+                .close_response("cancel")
+                .modal(true)
+                .transient_for(window)
+                .build();
 
                 confirm_dialog.add_responses(&[("cancel", "_Cancel"), ("delete", "_Delete")]);
                 confirm_dialog
-                    .set_response_appearance("delete", adw::ResponseAppearance::Destructive);
+                .set_response_appearance("delete", adw::ResponseAppearance::Destructive);
                 confirm_dialog.present();
                 confirm_dialog.choose(
                     Cancellable::NONE,
@@ -83,12 +72,12 @@ mod imp {
                                     eprintln!("Following error occurred when trying to delete the file:  {}", e);
                                     let _ = slf.imp().sender.get().unwrap().send(Action::ShowToast(
                                         "Could not delete file".to_owned(), None));
-                                },
+                                    },
+                                }
                             }
-                        }
-                    }),
-                );
-            });
+                        }),
+                    );
+                });
             klass.install_action("edit", Some("(sss)"), |slf, _, input| {
                 let (name, icon_path, exec_path) =
                     <(String, String, String)>::from_variant(input.unwrap()).unwrap();
@@ -127,8 +116,8 @@ use crate::component::viewport::Action;
 
 glib::wrapper! {
     pub struct Manage(ObjectSubclass<imp::Manage>)
-        @extends gtk::Box, gtk::Widget,
-        @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
+    @extends gtk::Box, gtk::Widget,
+    @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
 impl Manage {
@@ -136,7 +125,6 @@ impl Manage {
         let slf = Object::builder::<Self>().build();
         slf.set_sensitive(false);
         let _ = slf.imp().sender.set(sender);
-        slf.imp().view_label.set_label("Managed by <i>Shortcut</i>");
         slf.setup_filter();
         slf
     }
@@ -168,6 +156,22 @@ impl Manage {
     }
 
     fn filter(&self, app_list: gtk::ListBox, filter_criteria: &str) {
+        let apps = app_list.observe_children();
+
+        if apps.into_iter().count() == 0 {
+            self.imp()
+                .status_page
+                .set_description(Some("You have not created any shortcuts."));
+            self.imp().list_window.set_visible(false);
+            self.imp().status_page.set_visible(true);
+            return;
+        }
+
+        self.imp()
+            .status_page
+            .set_description(Some("Try a different search term."));
+
+        let mut visible_apps: usize = 0;
         for app in app_list.observe_children().into_iter() {
             let app = app
                 .unwrap()
@@ -181,14 +185,15 @@ impl Manage {
                 app.set_visible(false);
             } else {
                 app.set_visible(true);
+                visible_apps += 1;
             }
         }
+        self.imp().list_window.set_visible(visible_apps > 0);
+        self.imp().status_page.set_visible(visible_apps == 0);
     }
 
     pub fn load(&self, all: bool) {
         let imp = self.imp();
-
-        imp.show_all.set_active(all);
 
         while imp.app_list.first_child().is_some() {
             imp.app_list.remove(&imp.app_list.first_child().unwrap());

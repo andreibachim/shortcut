@@ -62,12 +62,6 @@
             <property name="title">Manage</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title">Toggle show all</property>
-                <property name="accelerator">&lt;ctrl&gt;a</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
                 <property name="title">Search</property>
                 <property name="accelerator">&lt;ctrl&gt;f</property>
               </object>
