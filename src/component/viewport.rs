@@ -96,7 +96,7 @@ mod imp {
                             previous_view.set_sensitive(true);
                             gtk::glib::idle_add_local_once(clone!(@weak carousel, @weak previous_view => move || {
                                 carousel.scroll_to(&previous_view, true);
-                            }));     
+                            }));
                         }
                         Action::Landing(scroll) => {
                             disable_focus_on_all_children();
