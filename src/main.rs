@@ -45,7 +45,7 @@ fn build_content() -> impl gtk::prelude::IsA<gtk::Widget> {
 }
 
 fn set_up_headerbar(content: &gtk::Box) {
-    let headerbar = adw::HeaderBar::builder().build();
+    let headerbar = adw::HeaderBar::builder().css_classes(["flat"]).build();
 
     let menu = gtk::gio::Menu::new();
     let shortcuts_item = gtk::gio::MenuItem::new(Some("Keyboard shortcuts"), Some("app.shortcuts"));
