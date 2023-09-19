@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="AdwPreferencesWindow" id="preferences">
+    <property name="modal">True</property>
+    <child>
+      <object class="AdwPreferencesPage">
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title">Application</property>
+            <child>
+              <object class="AdwComboRow" id="color_scheme">
+                <property name="title">Color scheme</property>
+                <property name="model">
+                  <object class="GtkStringList">
+                    <items>
+                      <item>System</item>
+                      <item>Dark</item>
+                      <item>Light</item>
+                    </items>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title">Create view</property>
+            <child>
+              <object class="AdwPreferencesRow">
+                <property name="title">Form validation</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="hexpand">true</property>
+                    <property name="valign">center</property>
+                    <style>
+                      <class name="header"/>
+                    </style>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="hexpand">true</property>
+                        <property name="halign">start</property>
+                        <property name="orientation">vertical</property>
+                        <property name="valign">center</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Disable form validation</property>
+                            <property name="halign">start</property>
+                            <property name="margin-bottom">3</property>
+                            <style>
+                              <class name="title"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Enable this for additional flexibility when creating shortcuts</property>
+                            <property name="halign">start</property>
+                            <style>
+                              <class name="subtitle"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="create_disable_validation">
+                        <property name="halign">end</property>
+                        <property name="hexpand">false</property>
+                        <property name="valign">center</property>
+                        <property name="active">false</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -11,6 +11,9 @@
       alias="keyboard_shortcuts.ui">resources/ui/keyboard_shortcuts.ui</file>
     <file compressed="true"
       preprocess="xml-stripblanks"
+      alias="preferences.ui">resources/ui/preferences.ui</file>
+    <file compressed="true"
+      preprocess="xml-stripblanks"
       alias="completed.ui">resources/ui/completed.ui</file>
     <file compressed="true"
       preprocess="xml-stripblanks"

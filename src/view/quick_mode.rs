@@ -29,6 +29,9 @@ mod imp {
         #[property(name = "icon", get, set, type = String, member = icon)]
         pub data: RefCell<Desktop>,
 
+        #[property(get, set)]
+        pub disable_validation: RefCell<bool>,
+
         pub old_name: RefCell<String>,
         pub sender: OnceCell<Sender<Action>>,
 
@@ -254,18 +257,24 @@ mod imp {
             .connect_apply(clone!(@weak slf => move |entry_row| {
                 let text = entry_row.text();
                 let path = Path::new(&text);
+                let validate_form = !*slf.disable_validation.borrow();
 
-                if !path.is_absolute() {
+                if text.is_empty() {
+                    show_error(&slf.sender, "The executable path is empty.", entry_row);
+                    return;
+                }
+
+                if !path.is_absolute() && validate_form {
                     show_error(&slf.sender, "Only absolute file paths are allowed.", entry_row);
                     return
                 }
 
-                if !path.exists() {
+                if !path.exists() && validate_form {
                     show_error(&slf.sender, "The executable file does not exist.", entry_row);
                     return
                 }
 
-                if !path.is_file() {
+                if !path.is_file() && validate_form {
                     show_error(&slf.sender, "The selected file is a directory.", entry_row);
                     return
                 }
@@ -281,17 +290,24 @@ mod imp {
                 let text = entry_row.text();
                 let path = Path::new(&text);
 
-                if !path.is_absolute() {
+                let validate_form = !*slf.disable_validation.borrow();
+
+                if text.is_empty() {
+                    show_error(&slf.sender, "The icon path is empty.", entry_row);
+                    return;
+                }
+
+                if !path.is_absolute() && validate_form {
                     show_error(&slf.sender, "Only absolute file paths are allowed.", entry_row);
                     return
                 }
 
-                if !path.exists() {
+                if !path.exists() && validate_form {
                     show_error(&slf.sender, "The icon file does not exist.", entry_row);
                     return
                 }
 
-                if !path.is_file() {
+                if !path.is_file() && validate_form {
                     show_error(&slf.sender, "The selected file is a directory.", entry_row);
                     return
                 }
@@ -331,7 +347,7 @@ use adw::traits::BinExt;
 use glib::Object;
 use gtk::{
     glib::{self, Sender},
-    prelude::ObjectExt,
+    prelude::{ObjectExt, SettingsExtManual},
     subclass::prelude::ObjectSubclassIsExt,
     traits::{EditableExt, WidgetExt},
 };
@@ -349,6 +365,12 @@ impl QuickMode {
         let slf = Object::builder::<Self>().build();
         slf.set_sensitive(false);
         let _ = slf.imp().sender.set(sender);
+
+        let settings = gtk::gio::Settings::new("io.github.andreibachim.shortcut");
+        settings
+            .bind("create-disable-validation", &slf, "disable_validation")
+            .build();
+
         slf
     }
 

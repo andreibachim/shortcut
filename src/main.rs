@@ -4,9 +4,13 @@ mod model;
 mod view;
 
 use gtk::{
-    prelude::{ActionMapExtManual, ApplicationExt, ApplicationExtManual},
+    prelude::{
+        ActionMapExtManual, ApplicationExt, ApplicationExtManual, SettingsExt, SettingsExtManual,
+    },
     traits::{BoxExt, GtkApplicationExt, GtkWindowExt},
 };
+
+use adw::traits::ComboRowExt;
 
 const APP_ID: &str = "io.github.andreibachim.shortcut";
 
@@ -20,6 +24,9 @@ fn main() -> gtk::glib::ExitCode {
 }
 
 fn build_window(app: &adw::Application) {
+    let settings = gtk::gio::Settings::new(APP_ID);
+    set_color_scheme(settings.uint("color-scheme"));
+
     adw::ApplicationWindow::builder()
         .application(app)
         .default_width(650)
@@ -48,6 +55,9 @@ fn set_up_headerbar(content: &gtk::Box) {
     let headerbar = adw::HeaderBar::builder().css_classes(["flat"]).build();
 
     let menu = gtk::gio::Menu::new();
+
+    let preferences_item = gtk::gio::MenuItem::new(Some("Preferences"), Some("app.preferences"));
+    menu.append_item(&preferences_item);
     let shortcuts_item = gtk::gio::MenuItem::new(Some("Keyboard shortcuts"), Some("app.shortcuts"));
     menu.append_item(&shortcuts_item);
     let about_item = gtk::gio::MenuItem::new(Some("About Shortcut"), Some("app.about"));
@@ -82,6 +92,43 @@ fn set_up_actions(app: &adw::Application) {
         .activate(|app: &adw::Application, _, _| app.quit())
         .build();
 
+    let preferences = gtk::gio::ActionEntry::builder("preferences")
+        .activate(|app: &adw::Application, _, _| {
+            let settings = gtk::gio::Settings::new(APP_ID);
+
+            let preferences_builder =
+                gtk::Builder::from_resource("/io/github/andreibachim/shortcut/preferences.ui");
+
+            let create_disable_validation: gtk::Switch = preferences_builder
+                .object("create_disable_validation")
+                .unwrap();
+
+            settings
+                .bind(
+                    "create-disable-validation",
+                    &create_disable_validation,
+                    "active",
+                )
+                .build();
+
+            let color_scheme: adw::ComboRow = preferences_builder.object("color_scheme").unwrap();
+
+            settings
+                .bind("color-scheme", &color_scheme, "selected")
+                .build();
+
+            color_scheme.connect_selected_notify(move |a| {
+                let selected = a.selected();
+                set_color_scheme(selected);
+            });
+
+            let preferences_window: adw::PreferencesWindow =
+                preferences_builder.object("preferences").unwrap();
+            preferences_window.set_transient_for(app.active_window().as_ref());
+            preferences_window.present();
+        })
+        .build();
+
     let about = gtk::gio::ActionEntry::builder("about")
         .activate(|app: &adw::Application, _, _| {
             let window = app.active_window().unwrap();
@@ -113,7 +160,16 @@ fn set_up_actions(app: &adw::Application) {
         })
         .build();
 
+    app.set_accels_for_action("app.preferences", &["<ctrl>comma"]);
     app.set_accels_for_action("app.shortcuts", &["<ctrl>question"]);
     app.set_accels_for_action("app.quit", &["<ctrl>Q"]);
-    app.add_action_entries([quit, keyboard_shortcuts, about]);
+    app.add_action_entries([quit, preferences, keyboard_shortcuts, about]);
+}
+
+fn set_color_scheme(scheme: u32) {
+    match scheme {
+        1 => adw::StyleManager::default().set_color_scheme(adw::ColorScheme::ForceDark),
+        2 => adw::StyleManager::default().set_color_scheme(adw::ColorScheme::ForceLight),
+        _ => adw::StyleManager::default().set_color_scheme(adw::ColorScheme::Default),
+    }
 }

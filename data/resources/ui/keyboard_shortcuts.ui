@@ -11,6 +11,12 @@
             <property name="title">General</property>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="title">Preferences</property>
+                <property name="accelerator">&lt;ctrl&gt;comma</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="title">Shortcuts</property>
                 <property name="accelerator">&lt;ctrl&gt;question</property>
               </object>
