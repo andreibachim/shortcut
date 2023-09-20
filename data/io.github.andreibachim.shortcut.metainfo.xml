@@ -47,6 +47,15 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.3.0" date="2023-09-20">
+      <description>
+        <p>Added preferences page that can handle color scheme and form validation.</p>
+        <p>Added a status view when filtering does not return any result, or no shortcuts have been
+          created using the app yet.
+        </p>
+        <p>Limited access to only the desktop files created by <i>Shortcut.</i></p>
+      </description>
+    </release>
     <release version="0.2.1" date="2023-09-14">
       <description>
         <p>Added 'Manage' mode to delete and edit shortcuts.</p>
