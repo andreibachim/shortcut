@@ -57,13 +57,19 @@
         <!-- No results -->
         <child>
           <object class="AdwStatusPage" id="status_page">
-            <!-- <property name="visible">false</property> -->
             <property name="title">No shortcuts found</property>
             <property name="icon-name">system-search-symbolic</property>
             <style>
               <class name="compact"/>
             </style>
-
+            <child>
+              <object class="GtkButton">
+                <property name="label">Create new shortcut</property>
+                <property name="action-name">create_new</property>
+                <property name="hexpand">false</property>
+                <property name="halign">center</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

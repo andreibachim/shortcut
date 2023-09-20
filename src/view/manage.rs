@@ -38,6 +38,15 @@ mod imp {
                 let _ = slf.imp().sender.get().unwrap().send(Action::Back);
             });
 
+            klass.install_action("create_new", None, |slf, _, _| {
+                let _ = slf
+                    .imp()
+                    .sender
+                    .get()
+                    .unwrap()
+                    .send(Action::QuickFlow(None, None, None));
+            });
+
             klass.install_action("delete", Some("(ss)"), |slf, _, param| {
                 let (path, name) = <(String, String)>::from_variant(param.unwrap()).unwrap();
 
@@ -161,7 +170,8 @@ impl Manage {
         if apps.into_iter().count() == 0 {
             self.imp()
                 .status_page
-                .set_description(Some("You have not created any shortcuts."));
+                .set_description(Some("You have not created any shortcuts"));
+
             self.imp().list_window.set_visible(false);
             self.imp().status_page.set_visible(true);
             return;
