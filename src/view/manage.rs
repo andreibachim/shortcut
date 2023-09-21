@@ -210,40 +210,41 @@ impl Manage {
         }
 
         //Load all the item widgets in the internal list
-        let paths =
-            std::fs::read_dir(gtk::glib::home_dir().join(".local/share/applications")).unwrap();
-        paths
-            .into_iter()
-            .filter_map(|entry_result| entry_result.ok())
-            .filter(|entry| {
-                entry
-                    .path()
-                    .extension()
-                    .is_some_and(|extension| extension.eq("desktop"))
-            })
-            .filter_map(|entry| {
-                parse_entry(entry.path())
-                    .ok()
-                    .map(|desktop| (entry, desktop))
-                    .filter(|(_, desktop)| {
-                        desktop
-                            .section("Desktop Entry")
-                            .attr("X-Shortcut-App")
-                            .is_some()
-                            || all
-                    })
-            })
-            .for_each(|(dir_entry, desktop)| {
-                let section = desktop.section("Desktop Entry");
-                let entry = crate::component::Entry::new(
-                    section.attr("Name"),
-                    dir_entry.path().to_str(),
-                    section.attr("Icon"),
-                    section.attr("Exec"),
-                );
-                imp.app_list.append(&entry);
-            });
+        let paths = std::fs::read_dir(gtk::glib::home_dir().join(".local/share/applications"));
+        if let Ok(paths) = paths {
+            paths
+                .into_iter()
+                .filter_map(|entry_result| entry_result.ok())
+                .filter(|entry| {
+                    entry
+                        .path()
+                        .extension()
+                        .is_some_and(|extension| extension.eq("desktop"))
+                })
+                .filter_map(|entry| {
+                    parse_entry(entry.path())
+                        .ok()
+                        .map(|desktop| (entry, desktop))
+                        .filter(|(_, desktop)| {
+                            desktop
+                                .section("Desktop Entry")
+                                .attr("X-Shortcut-App")
+                                .is_some()
+                                || all
+                        })
+                })
+                .for_each(|(dir_entry, desktop)| {
+                    let section = desktop.section("Desktop Entry");
+                    let entry = crate::component::Entry::new(
+                        section.attr("Name"),
+                        dir_entry.path().to_str(),
+                        section.attr("Icon"),
+                        section.attr("Exec"),
+                    );
+                    imp.app_list.append(&entry);
+                });
 
-        self.filter(imp.app_list.get(), &imp.filter_entry.text())
+            self.filter(imp.app_list.get(), &imp.filter_entry.text());
+        }
     }
 }
