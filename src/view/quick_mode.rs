@@ -63,10 +63,16 @@ mod imp {
                 let _ = std::fs::remove_file(self.get_file_path_from_name(old_name));
             }
 
-            let file_path = gtk::glib::home_dir().join(format!(
-                ".local/share/applications/{}.desktop",
+            let target_dir = gtk::glib::home_dir().join(".local/share/applications");
+            if !target_dir.exists() {
+                let _ = std::fs::create_dir_all(&target_dir);
+            }
+
+            let file_path = target_dir.join(format!(
+                "{}.desktop",
                 data.name.replace(' ', "-").to_lowercase()
             ));
+
             let mut file = File::create(file_path).expect("Could not create a new file");
             file.write_all(
                 data.get_output()
