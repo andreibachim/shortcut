@@ -1,0 +1,37 @@
+name: shortcut
+base: core22
+version: '0.3.1'
+summary: Make desktop files
+description: |
+  Simple application to create shortcuts for apps using only name, icon and executable.
+
+grade: devel
+confinement: devmode
+
+plugs:
+  file-system:
+    interface: system-files
+    read:
+      - /home/$USER/.local/share/applications
+    write:
+      - /home/$USER/.local/share/applications
+
+apps:
+  shortcut:
+    extensions: [gnome]
+    command: target/release/shortcut
+    plugs:
+      - file-system
+      - home
+
+parts:
+  shortcut-part:
+    plugin: dump
+    source: .
+    source-type: local
+    organize:
+      ./data/io.github.andreibachim.shortcut.gschema.xml: /usr/share/glib-2.0/schemas/io.github.andreibachim.shortcut.gschema.xml
+    override-prime: |
+      snapcraftctl prime
+      glib-compile-schemas /usr/share/glib-2.0/schemas/
+
