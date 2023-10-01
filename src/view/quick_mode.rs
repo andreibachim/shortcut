@@ -63,7 +63,11 @@ mod imp {
                 let _ = std::fs::remove_file(self.get_file_path_from_name(old_name));
             }
 
-            let target_dir = gtk::glib::home_dir().join(".local/share/applications");
+            let target_dir = PathBuf::from(format!(
+                "/home/{}/.local/share/applications",
+                std::env::var("USER").unwrap()
+            ));
+
             if !target_dir.exists() {
                 let _ = std::fs::create_dir_all(&target_dir);
             }
@@ -88,8 +92,9 @@ mod imp {
         }
 
         fn get_file_path_from_name(&self, name: &str) -> PathBuf {
-            gtk::glib::home_dir().join(format!(
-                ".local/share/applications/{}.desktop",
+            PathBuf::from(format!(
+                "/home/{}/.local/share/applications/{}.desktop",
+                std::env::var("USER").unwrap(),
                 name.replace(' ', "-").to_lowercase()
             ))
         }

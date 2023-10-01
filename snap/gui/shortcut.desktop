@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Shortcut
+Comment=Make desktop files
+Exec=shortcut
+Icon=${SNAP}/meta/gui/shortcut.svg
+Terminal=false
+Type=Application
+Categories=Utility;GTK;GNOME;
+Keywords=Shortcut;Icons;Pin;Launch;

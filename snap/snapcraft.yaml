@@ -3,18 +3,22 @@ base: core22
 version: '0.3.1'
 summary: Make desktop files
 description: |
-  Simple application to create shortcuts for apps using only name, icon and executable.
+  Simple application to create shortcuts for apps using only a name, an icon and an executable path.
 
-grade: devel
-confinement: devmode
+grade: stable #devel
+confinement: strict #devmode
+
+slots:
+  shortcut:
+    interface: dbus
+    bus: session
+    name: io.github.andreibachim.shortcut
 
 plugs:
   file-system:
-    interface: system-files
-    read:
-      - /home/$USER/.local/share/applications
+    interface: personal-files
     write:
-      - /home/$USER/.local/share/applications
+      - $HOME/.local/share/applications
 
 apps:
   shortcut:
@@ -29,9 +33,9 @@ parts:
     plugin: dump
     source: .
     source-type: local
-    organize:
-      ./data/io.github.andreibachim.shortcut.gschema.xml: /usr/share/glib-2.0/schemas/io.github.andreibachim.shortcut.gschema.xml
+    organize: 
+      data/io.github.andreibachim.shortcut.gschema.xml: /usr/share/glib-2.0/schemas/io.github.andreibachim.shortcut.gschema.xml
     override-prime: |
-      snapcraftctl prime
+      craftctl default
       glib-compile-schemas /usr/share/glib-2.0/schemas/
 
