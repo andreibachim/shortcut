@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Shortcut
-Comment=Make desktop files
+Comment=Make app shortcuts
 Exec=shortcut
 Icon=${SNAP}/meta/gui/shortcut.svg
 Terminal=false
