@@ -26,7 +26,7 @@
         <!-- The motto -->
         <child>
           <object class="GtkLabel">
-            <property name="label">Make desktop files</property>
+            <property name="label">Make app shortcuts</property>
             <style>
               <class name="dim-label" />
               <class name="title-4" />

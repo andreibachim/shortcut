@@ -3,3 +3,4 @@
 /.vscode
 /.flatpak-builder
 /build-dir
+*.snap
