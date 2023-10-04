@@ -1,10 +1,10 @@
 name: shortcut
-base: core22
 version: '0.3.1'
 summary: Make app shortcuts
 description: |
-  Simple application to create shortcuts for apps using only a name, an icon and an executable path.
+  Pin app shortcuts to your launcher using only a name, icon and executable path.
 
+base: core22
 grade: stable #devel
 confinement: strict #devmode
 
@@ -14,23 +14,23 @@ slots:
     bus: session
     name: io.github.andreibachim.shortcut
 
+apps:
+  shortcut:
+    extensions: [gnome]
+    command: target/release/shortcut
+
 plugs:
   target-dir:
     interface: personal-files
     write:
       - $HOME/.local/share/applications
-
-apps:
-  shortcut:
-    extensions: [gnome]
-    command: target/release/shortcut
-    plugs:
-      - target-dir
-      - home
+  home:
+    interface: home
 
 parts:
-  shortcut-part:
+  shortcut:
     plugin: dump
+    parse-info: [data/io.github.andreibachim.shortcut.metainfo.xml]
     source: .
     source-type: local
     organize: 
