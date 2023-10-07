@@ -1,111 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="Manage" parent="GtkBox">
-    <property name="orientation">vertical</property>
-    <property name="spacing">32</property>
-    <property name="vexpand">true</property>
-    <property name="margin-top">32</property>
-    <property name="margin-bottom">16</property>
-    <property name="margin-start">32</property>
-    <property name="margin-end">32</property>
-    <!-- Header -->
+  <template class="Manage" parent="AdwNavigationPage">
+    <property name="title">Shortcut</property>
+    <property name="tag">manage</property>
     <child>
-      <object class="GtkLabel">
-        <property name="label">User shortcuts</property>
-        <property name="halign">start</property>
-        <property name="margin-start">32</property>
-        <style>
-          <class name="title-3"/>
-        </style>
-      </object>
-    </child>
-    <!-- Content -->
-    <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <property name="spacing">24</property>
-        <property name="margin-start">32</property>
-        <property name="margin-end">30</property>
-        <property name="margin-bottom">16</property>
-        <property name="vexpand">true</property>
-        <!-- Filter -->
-        <child>
-          <object class="GtkSearchEntry" id="filter_entry">
-            <property name="placeholder-text">Filter by name</property>
-          </object>
-        </child>
-        <!-- List -->
-        <child>
-          <object class="GtkScrolledWindow" id="list_window">
-            <property name="visible">false</property>
-            <property name="vexpand">true</property>
-            <style>
-              <class name="background"/>
-            </style>
-            <child>
-              <object class="GtkListBox" id="app_list">
-                <property name="selection-mode">none</property>
-                <property name="margin-end">8</property>
-                <property name="valign">start</property>
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar" id="header_bar">
+            <property name="hexpand">true</property>
+            <child type="start">
+              <object class="GtkButton">
+                <property name="icon-name">view-refresh</property>
                 <style>
-                  <class name="boxed-list"/>
+                  <class name="flat"/>
                 </style>
               </object>
             </child>
           </object>
         </child>
-        <!-- No results -->
-        <child>
-          <object class="AdwStatusPage" id="status_page">
-            <property name="title">No shortcuts found</property>
-            <property name="icon-name">system-search-symbolic</property>
-            <style>
-              <class name="compact"/>
-            </style>
+        <property name="content">
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">32</property>
+            <property name="vexpand">true</property>
+            <property name="margin-top">64</property>
+            <property name="margin-bottom">16</property>
+            <property name="margin-start">16</property>
+            <property name="margin-end">32</property>
             <child>
-              <object class="GtkButton">
-                <property name="label">Create new shortcut</property>
-                <property name="action-name">create_new</property>
-                <property name="hexpand">false</property>
-                <property name="halign">center</property>
+              <object class="GtkSearchEntry" id="filter_entry">
+                <property name="halign">fill</property>
+                <property name="hexpand">true</property>
+                <property name="margin-start">32</property>
+                <property name="margin-end">32</property>
+                <property name="placeholder-text">Filter by name</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">24</property>
+                <property name="margin-start">32</property>
+                <property name="margin-end">30</property>
+                <property name="margin-bottom">16</property>
+                <property name="vexpand">true</property>
+                <child>
+                  <object class="GtkScrolledWindow" id="list_window">
+                    <property name="visible">false</property>
+                    <property name="vexpand">true</property>
+                    <style>
+                      <class name="background"/>
+                    </style>
+                    <child>
+                      <object class="GtkListBox" id="app_list">
+                        <property name="selection-mode">none</property>
+                        <property name="margin-end">8</property>
+                        <property name="valign">start</property>
+                        <style>
+                          <class name="boxed-list"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwStatusPage" id="status_page">
+                    <property name="title">No shortcuts found</property>
+                    <property name="valign">center</property>
+                    <property name="margin-top">64</property>
+                    <property name="icon-name">system-search-symbolic</property>
+                    <style>
+                      <class name="compact"/>
+                    </style>
+                    <child>
+                      <object class="GtkButton">
+                        <property name="label">Create new shortcut</property>
+                        <property name="action-name">navigation.push</property>
+                        <property name="action-target">'quick_mode'</property>
+                        <property name="hexpand">false</property>
+                        <property name="halign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
-        </child>
-      </object>
-    </child>
-    <!-- Navigation -->
-    <child>
-      <object class="GtkGrid">
-        <property name="valign">end</property>
-        <property name="column-homogeneous">true</property>
-        <style>
-          <class name="toolbar"/>
-          <class name="osd"/>
-        </style>
-        <child>
-          <object class="GtkButton">
-            <property name="use-underline">true</property>
-            <property name="label">_Back</property>
-            <property name="action-name">back</property>
-            <layout>
-              <property name="column">0</property>
-              <property name="row">0</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkSeparator">
-            <style>
-              <class name="spacer" />
-            </style>
-            <layout>
-              <property name="column">1</property>
-              <property name="column-span">3</property>
-              <property name="row">0</property>
-            </layout>
-          </object>
-        </child>
+        </property>
       </object>
     </child>
   </template>

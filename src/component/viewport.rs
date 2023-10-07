@@ -69,12 +69,10 @@ mod imp {
 
             let landing_view = crate::view::Landing::new(sender.clone());
             carousel.append(&landing_view);
-            let quick_mode_view = crate::view::QuickMode::new(sender.clone());
+            let quick_mode_view = crate::view::QuickMode::new();
             carousel.append(&quick_mode_view);
             let completed_view = crate::view::Completed::new(sender.clone());
             carousel.append(&completed_view);
-            let manage_view = crate::view::Manage::new(sender.clone());
-            carousel.append(&manage_view);
 
             receiver.borrow_mut().take().unwrap().attach(
                 None,
@@ -124,15 +122,6 @@ mod imp {
                             gtk::glib::idle_add_local_once(clone!(@weak carousel, @weak completed_view => move || {
                                 carousel.scroll_to(&completed_view, true);
                             }));
-                        },
-                        Action::Manage => {
-                            disable_focus_on_all_children();
-                            manage_view.set_sensitive(true);
-                            carousel.reorder(&manage_view, (carousel.position() as i32) + 1);
-                            gtk::glib::idle_add_local_once(clone!(@weak carousel, @weak manage_view => move || {
-                                carousel.scroll_to(&manage_view, true);
-                            }));
-                            manage_view.load(false);
                         },
                         Action::ShowToast(toast, widget) => {
                             toast_revealer.child().and_dynamic_cast::<gtk::CenterBox>()
@@ -197,6 +186,5 @@ pub enum Action {
     Back,
     QuickFlow(Option<String>, Option<String>, Option<String>),
     Completed,
-    Manage,
     ShowToast(String, Option<gtk::Widget>),
 }

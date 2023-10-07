@@ -1,20 +1,20 @@
 mod imp {
-    use std::cell::OnceCell;
 
     use adw::prelude::{GtkWindowExt, MessageDialogExt, MessageDialogExtManual, WidgetExt};
+    use adw::subclass::prelude::NavigationPageImpl;
     use gtk::gio::Cancellable;
+    use gtk::glib::clone;
     use gtk::glib::subclass::InitializingObject;
-    use gtk::glib::{clone, FromVariant, Sender};
-    use gtk::prelude::{CastNone, StaticType};
+    use gtk::glib::FromVariant;
+    use gtk::prelude::{CastNone, StaticType, ToVariant};
     use gtk::subclass::prelude::*;
     use gtk::{glib, CompositeTemplate};
-
-    use crate::component::viewport::Action;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/io/github/andreibachim/shortcut/manage.ui")]
     pub struct Manage {
-        pub sender: OnceCell<Sender<Action>>,
+        #[template_child]
+        pub header_bar: TemplateChild<adw::HeaderBar>,
         #[template_child]
         pub app_list: TemplateChild<gtk::ListBox>,
         #[template_child]
@@ -29,72 +29,52 @@ mod imp {
     impl ObjectSubclass for Manage {
         const NAME: &'static str = "Manage";
         type Type = super::Manage;
-        type ParentType = gtk::Box;
+        type ParentType = adw::NavigationPage;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
-
-            klass.install_action("back", None, |slf, _, _| {
-                let _ = slf.imp().sender.get().unwrap().send(Action::Back);
-            });
-
-            klass.install_action("create_new", None, |slf, _, _| {
-                let _ = slf
-                    .imp()
-                    .sender
-                    .get()
-                    .unwrap()
-                    .send(Action::QuickFlow(None, None, None));
-            });
-
             klass.install_action("delete", Some("(ss)"), |slf, _, param| {
                 let (path, name) = <(String, String)>::from_variant(param.unwrap()).unwrap();
-
                 let binding = slf.ancestor(gtk::Window::static_type());
                 let window = binding.and_dynamic_cast_ref::<gtk::Window>().unwrap();
 
                 let confirm_dialog = adw::MessageDialog::builder()
-                .heading("Delete")
-                .body(format!(
-                    "Are you sure you want to delete the '{}' shortcut?",
-                    name
-                ))
-                .default_response("cancel")
-                .close_response("cancel")
-                .modal(true)
-                .transient_for(window)
-                .build();
+                    .heading("Delete")
+                    .body(format!(
+                        "Are you sure you want to delete the '{}' shortcut?",
+                        name
+                    ))
+                    .default_response("cancel")
+                    .close_response("cancel")
+                    .modal(true)
+                    .transient_for(window)
+                    .build();
 
                 confirm_dialog.add_responses(&[("cancel", "_Cancel"), ("delete", "_Delete")]);
+
                 confirm_dialog
-                .set_response_appearance("delete", adw::ResponseAppearance::Destructive);
+                    .set_response_appearance("delete", adw::ResponseAppearance::Destructive);
+
                 confirm_dialog.present();
                 confirm_dialog.choose(
                     Cancellable::NONE,
-                    clone!(@weak slf => move |decision| {
+                    clone!(@weak slf, @weak window => move |decision| {
                         if decision.eq("delete") {
                             match std::fs::remove_file(path) {
-                                Ok(()) => {
-                                    slf.load(false);
-                                }
+                                Ok(()) => slf.load(false),
                                 Err(e) => {
-                                    eprintln!("Following error occurred when trying to delete the file:  {}", e);
-                                    let _ = slf.imp().sender.get().unwrap().send(Action::ShowToast(
-                                        "Could not delete file".to_owned(), None));
-                                    },
-                                }
+                                   let _ = window.activate_action("win.show_toast",
+                                       Some(&"Could not delete the shortcut".to_variant()));
+                                   eprintln!("Could not delete the shortcut: {:#?}", e);
+                                },
                             }
-                        }),
-                    );
-                });
-            klass.install_action("edit", Some("(sss)"), |slf, _, input| {
-                let (name, icon_path, exec_path) =
-                    <(String, String, String)>::from_variant(input.unwrap()).unwrap();
-                let _ = slf.imp().sender.get().unwrap().send(Action::QuickFlow(
-                    Some(name),
-                    Some(icon_path),
-                    Some(exec_path),
-                ));
+                        }
+                    }),
+                )
+            });
+
+            klass.install_action("edit", Some("(sss)"), |slf, _, params| {
+                let _ = slf.activate_action("win.load_quick_mode", params);
             });
         }
 
@@ -103,25 +83,29 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for Manage {}
+    impl ObjectImpl for Manage {
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.header_bar.get().pack_end(&crate::setup_headerbar());
+            self.obj().setup_filter();
+            self.obj().load(false);
+        }
+    }
 
     impl WidgetImpl for Manage {}
 
-    impl BoxImpl for Manage {}
+    impl NavigationPageImpl for Manage {}
 }
 
 use adw::prelude::EditableExt;
 use adw::prelude::WidgetExt;
 use freedesktop_entry_parser::parse_entry;
-use glib::Object;
 use gtk::glib::clone;
 use gtk::prelude::Cast;
 use gtk::{
-    glib::{self, Sender},
+    glib::{self},
     subclass::prelude::ObjectSubclassIsExt,
 };
-
-use crate::component::viewport::Action;
 
 glib::wrapper! {
     pub struct Manage(ObjectSubclass<imp::Manage>)
@@ -130,14 +114,6 @@ glib::wrapper! {
 }
 
 impl Manage {
-    pub fn new(sender: Sender<Action>) -> Self {
-        let slf = Object::builder::<Self>().build();
-        slf.set_sensitive(false);
-        let _ = slf.imp().sender.set(sender);
-        slf.setup_filter();
-        slf
-    }
-
     fn setup_filter(&self) {
         let filter_entry = self.imp().filter_entry.get();
         let action = gtk::CallbackAction::new(|filter_entry, _| {
@@ -214,6 +190,7 @@ impl Manage {
             "/home/{}/.local/share/applications",
             std::env::var("USER").unwrap()
         ));
+
         if let Ok(paths) = paths {
             paths
                 .into_iter()

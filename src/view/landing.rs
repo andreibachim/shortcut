@@ -31,11 +31,6 @@ mod imp {
                     .unwrap()
                     .send(Action::QuickFlow(None, None, None));
             });
-
-            klass.install_action("manage_mode", None, move |landing, _, _| {
-                let imp = landing.imp();
-                let _ = imp.sender.get().unwrap().send(Action::Manage);
-            });
         }
         fn instance_init(obj: &InitializingObject<Self>) {
             obj.init_template();
