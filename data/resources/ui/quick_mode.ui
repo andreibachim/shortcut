@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="QuickMode" parent="AdwNavigationPage">
-    <property name="title">Create new shortcut</property>
+    <property name="title">Shortcut</property>
     <property name="tag">quick_mode</property>
     <child>
       <object class="AdwToolbarView">
@@ -9,8 +9,11 @@
           <object class="AdwHeaderBar">
             <child type="end">
               <object class="GtkButton" id="save_button">
-                <property name="label">Save</property>
+                <property name="label">_Save</property>
+                <property name="use-underline">true</property>
                 <property name="halign">center</property>
+                <property name="valign">center</property>
+                <signal name="clicked" handler="save" swapped="true" />
                 <style>
                   <class name="suggested-action"/>
                 </style>
@@ -71,6 +74,7 @@
                     <!-- Name -->
                     <child>
                       <object class="GtkListBox">
+                        <property name="selection-mode">none</property>
                         <style>
                           <class name="boxed-list" />
                         </style>
@@ -84,6 +88,7 @@
                     <!-- Icon -->
                     <child>
                       <object class="GtkListBox">
+                        <property name="selection-mode">none</property>
                         <style>
                           <class name="boxed-list" />
                         </style>

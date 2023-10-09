@@ -1,7 +1,6 @@
 mod imp {
-    use std::cell::{OnceCell, RefCell};
+    use std::{cell::RefCell, fs::File};
 
-    use std::fs::File;
     use std::io::Write;
     use std::path::{Path, PathBuf};
 
@@ -10,7 +9,8 @@ mod imp {
     use adw::traits::EntryRowExt;
 
     use gtk::glib::subclass::InitializingObject;
-    use gtk::glib::{self, clone, closure, Properties, Sender};
+    use gtk::glib::{self, Properties};
+    use gtk::glib::{clone, closure};
     use gtk::prelude::{
         Cast, CastNone, FileExt, GObjectPropertyExpressionExt, ObjectExt, StaticType, ToVariant,
     };
@@ -18,7 +18,6 @@ mod imp {
     use gtk::traits::{EditableExt, WidgetExt};
     use gtk::{ClosureExpression, CompositeTemplate};
 
-    use crate::component::viewport::Action;
     use crate::model::Desktop;
 
     #[derive(Default, Properties, CompositeTemplate)]
@@ -76,13 +75,23 @@ mod imp {
             ));
 
             let mut file = File::create(file_path).expect("Could not create a new file");
-            file.write_all(
+            match file.write_all(
                 data.get_output()
                     .expect("Could not serialize desktop file for writing")
                     .as_bytes(),
-            )
-            .expect("Could not write to .desktop file.");
-            //TODO Show error toast somehow
+            ) {
+                Ok(()) => {
+                    let _ = self
+                        .obj()
+                        .activate_action("navigation.pop", Some(&"manage".to_variant()));
+                }
+                Err(e) => {
+                    eprintln!(
+                        "Could not save file because of the following error: \n {:#?}",
+                        e
+                    );
+                }
+            }
         }
 
         fn get_file_path_from_name(&self, name: &str) -> PathBuf {
@@ -280,7 +289,6 @@ mod imp {
                 entry_row.set_css_classes(&[]);
                 slf.obj().set_exec(text);
                 slf.save_button.grab_focus();
-                println!("The changes have been applied");
             }));
 
         slf.icon_input
@@ -315,7 +323,6 @@ mod imp {
                 image.set_from_file(Some(&text));
                 slf.obj().set_icon(text);
                 slf.exec_input.grab_focus();
-
             }));
 
         let name_expression = slf.obj().property_expression("name");
@@ -342,6 +349,7 @@ mod imp {
 }
 
 use adw::traits::BinExt;
+use adw::traits::EntryRowExt;
 use glib::Object;
 use gtk::{
     glib::{self},
@@ -389,6 +397,8 @@ impl QuickMode {
             if !exec_path.is_empty() {
                 self.imp().exec_input.set_text(&exec_path);
                 self.imp().exec_input.emit_by_name::<()>("apply", &[]);
+                self.imp().exec_input.get().set_show_apply_button(false);
+                self.imp().exec_input.get().set_show_apply_button(true);
             }
         }
     }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="Manage" parent="AdwNavigationPage">
+    <signal name="showing" handler="load"/>
     <property name="title">Shortcut</property>
     <property name="tag">manage</property>
     <child>
@@ -11,6 +12,7 @@
             <child type="start">
               <object class="GtkButton">
                 <property name="icon-name">view-refresh</property>
+                <property name="action-name">reload_apps</property>
                 <style>
                   <class name="flat"/>
                 </style>
@@ -75,8 +77,8 @@
                     <child>
                       <object class="GtkButton">
                         <property name="label">Create new shortcut</property>
-                        <property name="action-name">navigation.push</property>
-                        <property name="action-target">'quick_mode'</property>
+                        <property name="action-name">win.load_quick_mode</property>
+                        <property name="action-target">('', '', '')</property>
                         <property name="hexpand">false</property>
                         <property name="halign">center</property>
                       </object>

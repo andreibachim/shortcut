@@ -25,6 +25,14 @@ mod imp {
         pub filter_entry: TemplateChild<gtk::SearchEntry>,
     }
 
+    #[gtk::template_callbacks]
+    impl Manage {
+        #[template_callback]
+        fn load(&self) {
+            self.obj().load(false);
+        }
+    }
+
     #[glib::object_subclass]
     impl ObjectSubclass for Manage {
         const NAME: &'static str = "Manage";
@@ -33,6 +41,8 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+            klass.bind_template_callbacks();
+
             klass.install_action("delete", Some("(ss)"), |slf, _, param| {
                 let (path, name) = <(String, String)>::from_variant(param.unwrap()).unwrap();
                 let binding = slf.ancestor(gtk::Window::static_type());
@@ -75,6 +85,10 @@ mod imp {
 
             klass.install_action("edit", Some("(sss)"), |slf, _, params| {
                 let _ = slf.activate_action("win.load_quick_mode", params);
+            });
+
+            klass.install_action("reload_apps", None, |slf, _, _| {
+                slf.load(false);
             });
         }
 
@@ -180,6 +194,8 @@ impl Manage {
 
     pub fn load(&self, all: bool) {
         let imp = self.imp();
+
+        imp.filter_entry.set_text("");
 
         while imp.app_list.first_child().is_some() {
             imp.app_list.remove(&imp.app_list.first_child().unwrap());

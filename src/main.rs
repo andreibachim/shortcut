@@ -71,6 +71,7 @@ fn setup_nav_actions(window: &adw::ApplicationWindow, nav_view: &adw::Navigation
                 <(String, String, String)>::from_variant(params.unwrap()).unwrap();
             let quick_mode_page = nav_view.find_page("quick_mode").unwrap()
                 .dynamic_cast::<crate::view::QuickMode>().unwrap();
+            quick_mode_page.clear_data();
             quick_mode_page.edit_details(Some(name), Some(icon_path), Some(exec_path));
             nav_view.push_by_tag("quick_mode");
         }))
