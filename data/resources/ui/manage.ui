@@ -13,13 +13,52 @@
               <object class="GtkButton">
                 <property name="icon-name">view-refresh</property>
                 <property name="action-name">reload_apps</property>
+                <property name="tooltip-text">Reload</property>
                 <style>
                   <class name="flat"/>
                 </style>
+                <child>
+                  <object class='GtkShortcutController'>
+                    <property name='scope'>managed</property>
+                    <child>
+                      <object class='GtkShortcut'>
+                        <property name='trigger'>&lt;Control&gt;r</property>
+                        <property name='action'>activate</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
             <child type="end">
-              <object class="Menu"/>
+              <object class="GtkBox">
+                <property name="spacing">16</property>
+                <child>
+                  <object class="GtkButton">
+                    <property name="icon-name">value-increase</property>
+                    <property name="tooltip-text">New</property>
+                    <property name="action-name">win.load_quick_mode</property>
+                    <property name="action-target">('','','')</property>
+                    <child>
+                      <object class='GtkShortcutController'>
+                        <property name='scope'>managed</property>
+                        <child>
+                          <object class='GtkShortcut'>
+                            <property name='trigger'>&lt;Control&gt;n</property>
+                            <property name='action'>activate</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <style>
+                      <class name="suggested-action"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="Menu"/>
+                </child>
+              </object>
             </child>
           </object>
         </child>
@@ -31,7 +70,7 @@
             <property name="margin-top">64</property>
             <property name="margin-bottom">16</property>
             <property name="margin-start">16</property>
-            <property name="margin-end">32</property>
+            <property name="margin-end">16</property>
             <child>
               <object class="GtkSearchEntry" id="filter_entry">
                 <property name="halign">fill</property>
@@ -46,7 +85,7 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">24</property>
                 <property name="margin-start">32</property>
-                <property name="margin-end">30</property>
+                <property name="margin-end">32</property>
                 <property name="margin-bottom">16</property>
                 <property name="vexpand">true</property>
                 <child>
@@ -54,7 +93,7 @@
                     <property name="visible">false</property>
                     <property name="vexpand">true</property>
                     <style>
-                      <class name="background"/>
+                      <!-- <class name="background"/> -->
                     </style>
                     <child>
                       <object class="GtkListBox" id="app_list">
