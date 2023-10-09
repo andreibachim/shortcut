@@ -3,17 +3,18 @@ mod function;
 mod model;
 mod view;
 
+use component::Menu;
 use gtk::{
     glib::{clone, VariantTy},
     prelude::{
-        ActionExt, ActionMapExt, ActionMapExtManual, ApplicationExt, ApplicationExtManual, Cast,
-        SettingsExt, SettingsExtManual, StaticType, ToVariant,
+        ActionMapExtManual, ApplicationExt, ApplicationExtManual, Cast, SettingsExt,
+        SettingsExtManual, StaticType,
     },
     traits::{GtkApplicationExt, GtkWindowExt},
 };
 
+use adw::traits::AdwApplicationWindowExt;
 use adw::traits::ComboRowExt;
-use adw::{prelude::WidgetExt, traits::AdwApplicationWindowExt};
 use gtk::glib;
 use gtk::glib::FromVariant;
 use gtk::glib::StaticVariantType;
@@ -51,6 +52,7 @@ fn build_window(app: &adw::Application) {
 fn build_content(window: &adw::ApplicationWindow) -> impl gtk::prelude::IsA<gtk::Widget> {
     Manage::static_type();
     QuickMode::static_type();
+    Menu::static_type();
 
     let nav_view: adw::NavigationView =
         gtk::Builder::from_resource("/io/github/andreibachim/shortcut/component/nav_view.ui")
@@ -95,25 +97,6 @@ fn setup_toasts_action(window: &adw::ApplicationWindow) {
         .build();
 
     window.add_action_entries([show_toast]);
-}
-
-pub fn setup_headerbar() -> gtk::MenuButton {
-    let menu = gtk::gio::Menu::new();
-
-    let preferences_item = gtk::gio::MenuItem::new(Some("Preferences"), Some("app.preferences"));
-    menu.append_item(&preferences_item);
-    let shortcuts_item = gtk::gio::MenuItem::new(Some("Keyboard shortcuts"), Some("app.shortcuts"));
-    menu.append_item(&shortcuts_item);
-    let about_item = gtk::gio::MenuItem::new(Some("About Shortcut"), Some("app.about"));
-    menu.append_item(&about_item);
-
-    gtk::MenuButton::builder()
-        .tooltip_text("Menu")
-        .menu_model(&menu)
-        .hexpand(true)
-        .halign(gtk::Align::End)
-        .icon_name("open-menu-symbolic")
-        .build()
 }
 
 fn setup_actions(app: &adw::Application) {

@@ -100,7 +100,6 @@ mod imp {
     impl ObjectImpl for Manage {
         fn constructed(&self) {
             self.parent_constructed();
-            self.header_bar.get().pack_end(&crate::setup_headerbar());
             self.obj().setup_filter();
             self.obj().load(false);
         }

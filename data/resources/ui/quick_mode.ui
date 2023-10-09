@@ -8,15 +8,23 @@
         <child type="top">
           <object class="AdwHeaderBar">
             <child type="end">
-              <object class="GtkButton" id="save_button">
-                <property name="label">_Save</property>
-                <property name="use-underline">true</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <signal name="clicked" handler="save" swapped="true" />
-                <style>
-                  <class name="suggested-action"/>
-                </style>
+              <object class="GtkBox">
+                <property name="spacing">8</property>
+                <child>
+                  <object class="GtkButton" id="save_button">
+                    <property name="label">_Save</property>
+                    <property name="use-underline">true</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <signal name="clicked" handler="save" swapped="true" />
+                    <style>
+                      <class name="suggested-action"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="Menu"/>
+                </child>
               </object>
             </child>
           </object>

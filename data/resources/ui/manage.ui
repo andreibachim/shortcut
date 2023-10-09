@@ -18,6 +18,9 @@
                 </style>
               </object>
             </child>
+            <child type="end">
+              <object class="Menu"/>
+            </child>
           </object>
         </child>
         <property name="content">

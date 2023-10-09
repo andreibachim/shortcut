@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="Menu" parent="AdwBin">
+    <child>
+      <object class="GtkMenuButton">
+        <property name="tooltip-text">Menu</property>
+        <property name="menu-model">menu_model</property>
+        <property name="icon-name">open-menu-symbolic</property>
+      </object>
+    </child>
+  </template>
+  <menu id="menu_model">
+    <item>
+      <attribute name="label">Preferences</attribute>
+      <attribute name="action">app.preferences</attribute>
+    </item>
+    <item>
+      <attribute name="label">Keyboard shortcuts</attribute>
+      <attribute name="action">app.shortcuts</attribute>
+    </item>
+    <item>
+      <attribute name="label">About Shortcut</attribute>
+      <attribute name="action">app.about</attribute>
+    </item>
+  </menu>
+</interface>
+
