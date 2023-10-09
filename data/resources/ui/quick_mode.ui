@@ -11,18 +11,6 @@
               <object class="GtkBox">
                 <property name="spacing">8</property>
                 <child>
-                  <object class="GtkButton" id="save_button">
-                    <property name="label">_Save</property>
-                    <property name="use-underline">true</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <signal name="clicked" handler="save" swapped="true" />
-                    <style>
-                      <class name="suggested-action"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
                   <object class="Menu"/>
                 </child>
               </object>
@@ -71,7 +59,6 @@
               <object class="AdwClamp">
                 <property name="vexpand">true</property>
                 <property name="valign">start</property>
-                <property name="margin-bottom">48</property>
                 <property name="margin-start">64</property>
                 <property name="margin-end">64</property>
                 <property name="maximum-size">640</property>
@@ -144,11 +131,25 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkButton" id="save_button">
+                        <property name="halign">end</property>
+                        <property name="label">Save</property>
+                        <property name="use-underline">true</property>
+                        <property name="margin-top">16</property>
+                        <property name="margin-bottom">64</property>
+                        <property name="valign">start</property>
+                        <signal name="clicked" handler="save" swapped="true" />
+                        <style>
+                          <class name="suggested-action"/>
+                          <class name="pill"/>
+                        </style>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
             </child>
-
           </object>
         </property>
       </object>
