@@ -30,5 +30,11 @@
     <file compressed="true"
       preprocess="xml-stripblanks"
       alias="component/entry.ui">resources/ui/component/entry.ui</file>
+    <file compressed="true"
+      preprocess="xml-stripblanks"
+      alias="component/nav_view.ui">resources/ui/component/nav_view.ui</file>
+    <file compressed="true"
+      preprocess="xml-stripblanks"
+      alias="component/menu.ui">resources/ui/component/menu.ui</file>
   </gresource>
 </gresources>

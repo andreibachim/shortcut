@@ -1,23 +1,23 @@
 mod imp {
-    use std::cell::{OnceCell, RefCell};
+    use std::{cell::RefCell, fs::File};
 
-    use std::fs::File;
     use std::io::Write;
     use std::path::{Path, PathBuf};
 
+    use adw::subclass::prelude::NavigationPageImpl;
     use adw::traits::BinExt;
     use adw::traits::EntryRowExt;
 
     use gtk::glib::subclass::InitializingObject;
-    use gtk::glib::{self, clone, closure, Properties, Sender};
+    use gtk::glib::{self, Properties};
+    use gtk::glib::{clone, closure};
     use gtk::prelude::{
-        Cast, CastNone, FileExt, GObjectPropertyExpressionExt, ObjectExt, StaticType,
+        Cast, CastNone, FileExt, GObjectPropertyExpressionExt, ObjectExt, StaticType, ToVariant,
     };
     use gtk::subclass::prelude::*;
     use gtk::traits::{EditableExt, WidgetExt};
     use gtk::{ClosureExpression, CompositeTemplate};
 
-    use crate::component::viewport::Action;
     use crate::model::Desktop;
 
     #[derive(Default, Properties, CompositeTemplate)]
@@ -30,13 +30,10 @@ mod imp {
         pub data: RefCell<Desktop>,
 
         #[property(get, set)]
-        pub disable_validation: RefCell<bool>,
+        pub enable_validation: RefCell<bool>,
 
         pub old_name: RefCell<String>,
-        pub sender: OnceCell<Sender<Action>>,
 
-        #[template_child]
-        pub cancel_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub save_button: TemplateChild<gtk::Button>,
         #[template_child]
@@ -78,17 +75,23 @@ mod imp {
             ));
 
             let mut file = File::create(file_path).expect("Could not create a new file");
-            file.write_all(
+            match file.write_all(
                 data.get_output()
                     .expect("Could not serialize desktop file for writing")
                     .as_bytes(),
-            )
-            .expect("Could not write to .desktop file.");
-            let _ = self
-                .sender
-                .get()
-                .expect("Could not get sender")
-                .send(Action::Completed);
+            ) {
+                Ok(()) => {
+                    let _ = self
+                        .obj()
+                        .activate_action("navigation.pop", Some(&"manage".to_variant()));
+                }
+                Err(e) => {
+                    eprintln!(
+                        "Could not save file because of the following error: \n {:#?}",
+                        e
+                    );
+                }
+            }
         }
 
         fn get_file_path_from_name(&self, name: &str) -> PathBuf {
@@ -104,7 +107,7 @@ mod imp {
     impl ObjectSubclass for QuickMode {
         const NAME: &'static str = "QuickMode";
         type Type = super::QuickMode;
-        type ParentType = gtk::Box;
+        type ParentType = adw::NavigationPage;
 
         fn new() -> Self {
             Self {
@@ -116,10 +119,6 @@ mod imp {
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
             klass.bind_template_callbacks();
-
-            klass.install_action("cancel", None, move |quick_mode, _, _| {
-                let _ = quick_mode.imp().sender.get().unwrap().send(Action::Back);
-            });
 
             klass.install_action("pick_exec", None, move |quick_mode, _, _| {
                 let imp = quick_mode.imp();
@@ -211,6 +210,7 @@ mod imp {
     impl ObjectImpl for QuickMode {
         fn constructed(&self) {
             self.parent_constructed();
+            self.obj().init();
             bind_name_preview(self);
             setup_form_validation(self);
             self.icon_input
@@ -252,48 +252,44 @@ mod imp {
             .sync_create()
             .build();
 
-        let show_error =
-            |sender: &OnceCell<Sender<Action>>, toast_test: &str, entry_row: &adw::EntryRow| {
-                let _ = sender
-                    .get()
-                    .expect("Could not get sender")
-                    .send(Action::ShowToast(
-                        toast_test.to_owned(),
-                        entry_row.clone().dynamic_cast().ok(),
-                    ));
-                entry_row.set_css_classes(&["error"]);
-            };
+        let show_error = |toast_text: &str, entry_row: &adw::EntryRow| {
+            let window = entry_row
+                .ancestor(adw::ApplicationWindow::static_type())
+                .unwrap();
+            let _ = window.activate_action("win.show_toast", Some(&toast_text.to_variant()));
+            entry_row.set_css_classes(&["error"]);
+            entry_row.grab_focus();
+        };
 
         slf.exec_input
             .connect_apply(clone!(@weak slf => move |entry_row| {
                 let text = entry_row.text();
                 let path = Path::new(&text);
-                let validate_form = !*slf.disable_validation.borrow();
+                let validate_form = *slf.enable_validation.borrow();
 
                 if text.is_empty() {
-                    show_error(&slf.sender, "The executable path is empty.", entry_row);
-                    return;
+                    show_error("The executable path is empty", entry_row);
+                    return
                 }
 
                 if !path.is_absolute() && validate_form {
-                    show_error(&slf.sender, "Only absolute file paths are allowed.", entry_row);
+                    show_error("Only absolute file paths are allowed", entry_row);
                     return
                 }
 
                 if !path.exists() && validate_form {
-                    show_error(&slf.sender, "The executable file does not exist.", entry_row);
+                    show_error("The executable file does not exist", entry_row);
                     return
                 }
 
                 if !path.is_file() && validate_form {
-                    show_error(&slf.sender, "The selected file is a directory.", entry_row);
+                    show_error("The selected file is a directory", entry_row);
                     return
                 }
 
                 entry_row.set_css_classes(&[]);
                 slf.obj().set_exec(text);
                 slf.save_button.grab_focus();
-
             }));
 
         slf.icon_input
@@ -301,25 +297,25 @@ mod imp {
                 let text = entry_row.text();
                 let path = Path::new(&text);
 
-                let validate_form = !*slf.disable_validation.borrow();
+                let validate_form = *slf.enable_validation.borrow();
 
                 if text.is_empty() {
-                    show_error(&slf.sender, "The icon path is empty.", entry_row);
-                    return;
+                    show_error("The icon path is empty", entry_row);
+                    return
                 }
 
                 if !path.is_absolute() && validate_form {
-                    show_error(&slf.sender, "Only absolute file paths are allowed.", entry_row);
+                    show_error("Only absolute file paths are allowed", entry_row);
                     return
                 }
 
                 if !path.exists() && validate_form {
-                    show_error(&slf.sender, "The icon file does not exist.", entry_row);
+                    show_error("The icon file does not exist", entry_row);
                     return
                 }
 
                 if !path.is_file() && validate_form {
-                    show_error(&slf.sender, "The selected file is a directory.", entry_row);
+                    show_error("The selected file is a directory", entry_row);
                     return
                 }
 
@@ -328,7 +324,6 @@ mod imp {
                 image.set_from_file(Some(&text));
                 slf.obj().set_icon(text);
                 slf.exec_input.grab_focus();
-
             }));
 
         let name_expression = slf.obj().property_expression("name");
@@ -351,38 +346,30 @@ mod imp {
     }
 
     impl WidgetImpl for QuickMode {}
-    impl BoxImpl for QuickMode {}
+    impl NavigationPageImpl for QuickMode {}
 }
 
 use adw::traits::BinExt;
-use glib::Object;
+use adw::traits::EntryRowExt;
 use gtk::{
-    glib::{self, Sender},
+    glib::{self},
     prelude::{ObjectExt, SettingsExtManual},
     subclass::prelude::ObjectSubclassIsExt,
     traits::{EditableExt, WidgetExt},
 };
 
-use crate::component::viewport::Action;
-
 glib::wrapper! {
     pub struct QuickMode(ObjectSubclass<imp::QuickMode>)
-    @extends gtk::Box, gtk::Widget,
+    @extends adw::NavigationPage, gtk::Widget,
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 
 impl QuickMode {
-    pub fn new(sender: Sender<Action>) -> Self {
-        let slf = Object::builder::<Self>().build();
-        slf.set_sensitive(false);
-        let _ = slf.imp().sender.set(sender);
-
+    pub fn init(&self) {
         let settings = gtk::gio::Settings::new("io.github.andreibachim.shortcut");
         settings
-            .bind("create-disable-validation", &slf, "disable_validation")
+            .bind("create-enable-validation", self, "enable_validation")
             .build();
-
-        slf
     }
 
     pub fn edit_details(
@@ -407,6 +394,8 @@ impl QuickMode {
             if !exec_path.is_empty() {
                 self.imp().exec_input.set_text(&exec_path);
                 self.imp().exec_input.emit_by_name::<()>("apply", &[]);
+                self.imp().exec_input.get().set_show_apply_button(false);
+                self.imp().exec_input.get().set_show_apply_button(true);
             }
         }
     }

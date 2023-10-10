@@ -51,7 +51,7 @@ use gtk::{
 use crate::component::viewport::Action;
 
 glib::wrapper! {
-    pub struct Completed(ObjectSubclass<imp::Completed>)
+    pub struct ompleted(ObjectSubclass<imp::Completed>)
         @extends gtk::Box, gtk::Widget,
         @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }

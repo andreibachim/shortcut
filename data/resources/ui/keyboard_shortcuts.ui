@@ -17,7 +17,7 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title">Shortcuts</property>
+                <property name="title">Keyboard shortcuts</property>
                 <property name="accelerator">&lt;ctrl&gt;question</property>
               </object>
             </child>
@@ -31,17 +31,23 @@
         </child>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title">Main menu</property>
+            <property name="title">Shortcuts list</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title">Create</property>
-                <property name="accelerator">&lt;alt&gt;c</property>
+                <property name="title">New</property>
+                <property name="accelerator">&lt;ctrl&gt;n</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title">Manage</property>
-                <property name="accelerator">&lt;alt&gt;m</property>
+                <property name="title">Reload</property>
+                <property name="accelerator">&lt;ctrl&gt;r</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title">Search</property>
+                <property name="accelerator">&lt;ctrl&gt;f</property>
               </object>
             </child>
           </object>
@@ -51,25 +57,14 @@
             <property name="title">Create</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title">Cancel</property>
-                <property name="accelerator">&lt;alt&gt;c</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
                 <property name="title">Save</property>
                 <property name="accelerator">&lt;alt&gt;s</property>
               </object>
             </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkShortcutsGroup">
-            <property name="title">Manage</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title">Search</property>
-                <property name="accelerator">&lt;ctrl&gt;f</property>
+                <property name="title">Back</property>
+                <property name="accelerator">BackSpace</property>
               </object>
             </child>
           </object>
