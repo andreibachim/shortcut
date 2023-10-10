@@ -8,11 +8,8 @@
   <summary>Make app shortcuts</summary>
   <description>
     <p>
-      Shortcut is a tool that allows users to quickly pin executable files to their app launcher for
-      quick access.
-
-      It guides users throught the process by providing file picker dialogs with relevant filters,
-      input validation, and name and icon previews.
+      Shortcut is a tool that allows users to quickly pin executable files to their app launcher. 
+      It guides users throught the process by providing file picker dialogs with relevant filters, input validation, and name and icon previews.
     </p>
   </description>
   <provides>
@@ -27,68 +24,74 @@
   <screenshots>
     <screenshot type="default">
       <image>
-        https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot1.png</image>
-      <caption>Screenshot of the main menu</caption>
-    </screenshot>
-    <screenshot>
-      <image>
-        https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot2.png</image>
-      <caption>Light mode with emtpy form</caption>
-    </screenshot>
-    <screenshot>
-      <image>
-        https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot3.png</image>
-      <caption>Dark mode with filled form</caption>
-    </screenshot>
-    <screenshot>
-      <image>
-        https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot4.png</image>
-      <caption>Manage mode list</caption>
-    </screenshot>
-  </screenshots>
-  <releases>
-    <release version="0.3.1" date="2023-09-20">
-      <description>
-        <p>Fixed app crash that happens when the target directory for desktop files does not exist.</p>
-      </description>
-    </release>
-    <release version="0.3.0" date="2023-09-20">
-      <description>
-        <p>Added preferences page that can handle color scheme and form validation.</p>
-        <p>Added a status view when filtering does not return any result, or no shortcuts have been
-          created using the app yet.
-        </p>
-        <p>Limited access to only the desktop files created by <i>Shortcut.</i></p>
-      </description>
-    </release>
-    <release version="0.2.1" date="2023-09-14">
-      <description>
-        <p>Added 'Manage' mode to delete and edit shortcuts.</p>
-        <p>Please note that shortcuts created by previous versions of the app need to be first 
-          saved from editing mode before they will be detected as <i>Shortcut</i> managed.</p>
-      </description>
-    </release>
-    <release version="0.2.0" date="2023-09-14">
-      <description>
-        <p>Added 'Manage' mode to delete and edit shortcuts.</p>
-      </description>
-    </release>
-    <release version="0.1.2" date="2023-08-19">
-      <description>
-        <p>Bug fixed for flathub build.</p>
-      </description>
-    </release>
-    <release version="0.1.1" date="2023-08-19">
-      <description>
-        <p>Various fixes regarding around error toasts.</p>
-      </description>
-    </release>
-    <release version="0.1.0" date="2023-08-19">
-      <description>
-        <p>Alpha version of Shortcuts. The only mode is Quick mode - which is targeted at users that
-          simply want to pin a new application to their app
-          launcher.</p>
-      </description>
-    </release>
-  </releases>
-</component>
+          https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot1.png</image>
+        <caption>Screenshot of the main menu</caption>
+      </screenshot>
+      <screenshot>
+        <image>
+            https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot2.png</image>
+          <caption>Light mode with emtpy form</caption>
+        </screenshot>
+        <screenshot>
+          <image>
+              https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot3.png</image>
+            <caption>Dark mode with filled form</caption>
+          </screenshot>
+          <screenshot>
+            <image>
+                https://raw.githubusercontent.com/andreibachim/shortcut/main/data/screenshots/screenshot4.png</image>
+              <caption>Manage mode list</caption>
+            </screenshot>
+          </screenshots>
+          <releases>
+            <release version="0.4.0" date="2023-10-10">
+              <description>
+                <p>1. Implemented new navigation system, more in line with modern GNOME apps.</p>
+                <p>2. Redesiged application flows to streamline usage patterns.</p>
+              </description>
+            </release>
+            <release version="0.3.1" date="2023-09-20">
+              <description>
+                <p>Fixed app crash that happens when the target directory for desktop files does not exist.</p>
+              </description>
+            </release>
+            <release version="0.3.0" date="2023-09-20">
+              <description>
+                <p>Added preferences page that can handle color scheme and form validation.</p>
+                <p>Added a status view when filtering does not return any result, or no shortcuts have been
+                created using the app yet.
+              </p>
+              <p>Limited access to only the desktop files created by <i>Shortcut</i>.</p>
+            </description>
+          </release>
+          <release version="0.2.1" date="2023-09-14">
+            <description>
+              <p>Added 'Manage' mode to delete and edit shortcuts.</p>
+              <p>Please note that shortcuts created by previous versions of the app need to be first 
+                saved from editing mode before they will be detected as <i>Shortcut</i> managed.</p>
+            </description>
+          </release>
+          <release version="0.2.0" date="2023-09-14">
+            <description>
+              <p>Added 'Manage' mode to delete and edit shortcuts.</p>
+            </description>
+          </release>
+          <release version="0.1.2" date="2023-08-19">
+            <description>
+              <p>Bug fixed for flathub build.</p>
+            </description>
+          </release>
+          <release version="0.1.1" date="2023-08-19">
+            <description>
+              <p>Various fixes regarding around error toasts.</p>
+            </description>
+          </release>
+          <release version="0.1.0" date="2023-08-19">
+            <description>
+              <p>Alpha version of Shortcuts. The only mode is Quick mode - which is targeted at users that
+              simply want to pin a new application to their app
+                launcher.</p>
+            </description>
+          </release>
+        </releases>
+      </component>

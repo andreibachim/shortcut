@@ -1,8 +1,9 @@
 name: shortcut
-version: '0.3.1'
+version: '0.4.0'
 summary: Make app shortcuts
 description: |
-  Pin app shortcuts to your launcher using only a name, icon and executable path.
+      Shortcut is a tool that allows users to quickly pin executable files to their app launcher.
+      It guides users throught the process by providing file pickers with relevant filters, input validation, and name and icon previews.
 
 base: core22
 grade: stable #devel
@@ -30,7 +31,6 @@ plugs:
 parts:
   shortcut:
     plugin: dump
-    parse-info: [data/io.github.andreibachim.shortcut.metainfo.xml]
     source: .
     source-type: local
     organize: 
