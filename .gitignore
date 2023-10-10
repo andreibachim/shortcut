@@ -3,4 +3,5 @@
 /.vscode
 /.flatpak-builder
 /build-dir
+/scripts/generated-sources.json
 *.snap

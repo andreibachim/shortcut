@@ -11,7 +11,7 @@
             <property name="hexpand">true</property>
             <child type="start">
               <object class="GtkButton">
-                <property name="icon-name">view-refresh</property>
+                <property name="icon-name">view-refresh-symbolic</property>
                 <property name="action-name">reload_apps</property>
                 <property name="tooltip-text">Reload</property>
                 <style>
