@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <schemalist>
   <schema id="io.github.andreibachim.shortcut" path="/io/github/andreibachim/shortcut/">
-    <key name="create-disable-validation" type="b">
-      <default>false</default>
-      <summary>Disable form validation in create view</summary>
+    <key name="create-enable-validation" type="b">
+      <default>true</default>
+      <summary>Enable form validation in create view</summary>
     </key>
     <key name="color-scheme" type="u">
       <default>0</default>

@@ -111,14 +111,14 @@ fn setup_actions(app: &adw::Application) {
             let preferences_builder =
                 gtk::Builder::from_resource("/io/github/andreibachim/shortcut/preferences.ui");
 
-            let create_disable_validation: gtk::Switch = preferences_builder
-                .object("create_disable_validation")
+            let create_enable_validation: gtk::Switch = preferences_builder
+                .object("create_enable_validation")
                 .unwrap();
 
             settings
                 .bind(
-                    "create-disable-validation",
-                    &create_disable_validation,
+                    "create-enable-validation",
+                    &create_enable_validation,
                     "active",
                 )
                 .build();

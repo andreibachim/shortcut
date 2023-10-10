@@ -30,7 +30,7 @@ mod imp {
         pub data: RefCell<Desktop>,
 
         #[property(get, set)]
-        pub disable_validation: RefCell<bool>,
+        pub enable_validation: RefCell<bool>,
 
         pub old_name: RefCell<String>,
 
@@ -210,6 +210,7 @@ mod imp {
     impl ObjectImpl for QuickMode {
         fn constructed(&self) {
             self.parent_constructed();
+            self.obj().init();
             bind_name_preview(self);
             setup_form_validation(self);
             self.icon_input
@@ -264,7 +265,7 @@ mod imp {
             .connect_apply(clone!(@weak slf => move |entry_row| {
                 let text = entry_row.text();
                 let path = Path::new(&text);
-                let validate_form = !*slf.disable_validation.borrow();
+                let validate_form = *slf.enable_validation.borrow();
 
                 if text.is_empty() {
                     show_error("The executable path is empty", entry_row);
@@ -296,7 +297,7 @@ mod imp {
                 let text = entry_row.text();
                 let path = Path::new(&text);
 
-                let validate_form = !*slf.disable_validation.borrow();
+                let validate_form = *slf.enable_validation.borrow();
 
                 if text.is_empty() {
                     show_error("The icon path is empty", entry_row);
@@ -350,7 +351,6 @@ mod imp {
 
 use adw::traits::BinExt;
 use adw::traits::EntryRowExt;
-use glib::Object;
 use gtk::{
     glib::{self},
     prelude::{ObjectExt, SettingsExtManual},
@@ -365,14 +365,11 @@ glib::wrapper! {
 }
 
 impl QuickMode {
-    pub fn new() -> Self {
-        let slf = Object::builder::<Self>().build();
+    pub fn init(&self) {
         let settings = gtk::gio::Settings::new("io.github.andreibachim.shortcut");
         settings
-            .bind("create-disable-validation", &slf, "disable_validation")
+            .bind("create-enable-validation", self, "enable_validation")
             .build();
-
-        slf
     }
 
     pub fn edit_details(
@@ -425,11 +422,5 @@ impl QuickMode {
                 .pixel_size(128)
                 .build(),
         ));
-    }
-}
-
-impl Default for QuickMode {
-    fn default() -> Self {
-        Self::new()
     }
 }
