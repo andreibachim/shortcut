@@ -8,10 +8,7 @@ description: |
 base: core22
 grade: stable #devel
 confinement: strict #devmode
-architectures:
-  - amd64
-  - arm64
-  - armhf
+architectures: [amd64, arm64, armhf]
 
 slots:
   shortcut:
