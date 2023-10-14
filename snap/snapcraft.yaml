@@ -28,13 +28,18 @@ plugs:
     interface: home
 
 parts:
+  rust-deps:
+    plugin: nil
+    build-packages:
+      - curl
+    override-pull: |
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
   shortcut:
+    after: [rust-deps]
     build-packages: [cargo, rustc]
     plugin: rust
     source: .
-    override-pull: |
-      craftctl default
-      rustup update
 
 apps:
   shortcut:
