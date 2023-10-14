@@ -1,4 +1,4 @@
-name: shortcut
+name: shortcut-app
 version: '0.4.0'
 summary: Make app shortcuts
 description: |
@@ -15,11 +15,6 @@ slots:
     bus: session
     name: io.github.andreibachim.shortcut
 
-apps:
-  shortcut:
-    extensions: [gnome]
-    command: target/release/shortcut
-
 plugs:
   target-dir:
     interface: personal-files
@@ -30,12 +25,11 @@ plugs:
 
 parts:
   shortcut:
-    plugin: dump
-    source: .
-    source-type: local
-    organize: 
-      data/io.github.andreibachim.shortcut.gschema.xml: /usr/share/glib-2.0/schemas/io.github.andreibachim.shortcut.gschema.xml
-    override-prime: |
-      craftctl default
-      glib-compile-schemas /usr/share/glib-2.0/schemas/
+    build-packages: [cargo, rustc]
+    plugin: rust
+    source: . 
 
+apps:
+  shortcut:
+    extensions: [gnome]
+    command: bin/shortcut 
