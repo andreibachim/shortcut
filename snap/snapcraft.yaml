@@ -8,6 +8,10 @@ description: |
 base: core22
 grade: stable #devel
 confinement: strict #devmode
+architectures:
+  - amd64
+  - arm64
+  - armhf
 
 slots:
   shortcut:
@@ -27,7 +31,10 @@ parts:
   shortcut:
     build-packages: [cargo, rustc]
     plugin: rust
-    source: . 
+    source: .
+    override-pull: |
+      craftctl default
+      rustup update
 
 apps:
   shortcut:
