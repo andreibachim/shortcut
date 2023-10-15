@@ -10,12 +10,6 @@ grade: stable #devel
 confinement: strict #devmode
 architectures: [amd64, arm64, armhf]
 
-slots:
-  shortcut:
-    interface: dbus
-    bus: session
-    name: io.github.andreibachim.shortcut
-
 plugs:
   target-dir:
     interface: personal-files
@@ -31,14 +25,22 @@ parts:
       - curl
     override-pull: |
       curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-  shortcut:
+  shortcut-app:
     after: [rust-deps]
     build-packages: [cargo, rustc]
     plugin: rust
     source: .
+  compile-schemas:
+    after: [shortcut-app]
+    plugin: dump
+    source: .
+    organize:
+      data/io.github.andreibachim.shortcut.gschema.xml: usr/share/glib-2.0/schemas/io.github.andreibachim.shortcut.gschema.xml
+    override-prime: |
+      craftctl default
+      glib-compile-schemas usr/share/glib-2.0/schemas
 
 apps:
-  shortcut:
+  shortcut-app:
     extensions: [gnome]
     command: bin/shortcut 
