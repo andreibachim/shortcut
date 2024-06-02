@@ -1,13 +1,14 @@
 mod imp {
-    use std::{cell::RefCell, fs::File};
+    use std::cell::RefCell;
 
-    use std::io::Write;
     use std::path::{Path, PathBuf};
 
     use adw::subclass::prelude::NavigationPageImpl;
     use adw::traits::BinExt;
     use adw::traits::EntryRowExt;
 
+    use ashpd::desktop::dynamic_launcher::{DynamicLauncherProxy, PrepareInstallOptions};
+    use ashpd::WindowIdentifier;
     use gtk::glib::subclass::InitializingObject;
     use gtk::glib::{self, Properties};
     use gtk::glib::{clone, closure};
@@ -19,6 +20,7 @@ mod imp {
     use gtk::{ClosureExpression, CompositeTemplate};
 
     use crate::model::Desktop;
+    use crate::APP_ID;
 
     #[derive(Default, Properties, CompositeTemplate)]
     #[properties(wrapper_type = super::QuickMode)]
@@ -52,46 +54,46 @@ mod imp {
     impl QuickMode {
         #[template_callback]
         fn save(&self) {
-            let data = self.data.borrow();
-            let old_name_binding = self.old_name.borrow();
-            let old_name = old_name_binding.as_ref();
-
-            if !data.name.eq(old_name) {
-                let _ = std::fs::remove_file(self.get_file_path_from_name(old_name));
-            }
-
-            let target_dir = PathBuf::from(format!(
-                "/home/{}/.local/share/applications",
-                std::env::var("USER").unwrap()
-            ));
-
-            if !target_dir.exists() {
-                let _ = std::fs::create_dir_all(&target_dir);
-            }
-
-            let file_path = target_dir.join(format!(
-                "{}.desktop",
-                data.name.replace(' ', "-").to_lowercase()
-            ));
-
-            let mut file = File::create(file_path).expect("Could not create a new file");
-            match file.write_all(
-                data.get_output()
-                    .expect("Could not serialize desktop file for writing")
-                    .as_bytes(),
-            ) {
-                Ok(()) => {
-                    let _ = self
-                        .obj()
-                        .activate_action("navigation.pop", Some(&"manage".to_variant()));
-                }
-                Err(e) => {
-                    eprintln!(
-                        "Could not save file because of the following error: \n {:#?}",
-                        e
-                    );
-                }
-            }
+            // let data = self.data.borrow();
+            // let old_name_binding = self.old_name.borrow();
+            // let old_name = old_name_binding.as_ref();
+            //
+            // if !data.name.eq(old_name) {
+            //     let _ = std::fs::remove_file(self.get_file_path_from_name(old_name));
+            // }
+            //
+            // let target_dir = PathBuf::from(format!(
+            //     "/home/{}/.local/share/applications",
+            //     std::env::var("USER").unwrap()
+            // ));
+            //
+            // if !target_dir.exists() {
+            //     let _ = std::fs::create_dir_all(&target_dir);
+            // }
+            //
+            // let file_path = target_dir.join(format!(
+            //     "{}.desktop",
+            //     data.name.replace(' ', "-").to_lowercase()
+            // ));
+            //
+            // let mut file = File::create(file_path).expect("Could not create a new file");
+            // match file.write_all(
+            //     data.get_output()
+            //         .expect("Could not serialize desktop file for writing")
+            //         .as_bytes(),
+            // ) {
+            //     Ok(()) => {
+            //         let _ = self
+            //             .obj()
+            //             .activate_action("navigation.pop", Some(&"manage".to_variant()));
+            //     }
+            //     Err(e) => {
+            //         eprintln!(
+            //             "Could not save file because of the following error: \n {:#?}",
+            //             e
+            //         );
+            //     }
+            // }
         }
 
         fn get_file_path_from_name(&self, name: &str) -> PathBuf {
@@ -161,6 +163,36 @@ mod imp {
                         }
                     }),
                 );
+            });
+            klass.install_action_async("save", None, |quick_mode, _, _| async move {
+                let data = quick_mode.imp().data.borrow();
+                let identifier = WindowIdentifier::default();
+                let dlp = DynamicLauncherProxy::new().await.unwrap();
+                let icon = gtk::gio::File::for_path(&data.icon);
+                let (icon_data, _) = icon.load_contents_future().await.unwrap();
+                let prep_result = dlp
+                    .prepare_install(
+                        &identifier,
+                        &data.name,
+                        ashpd::desktop::Icon::Bytes(icon_data),
+                        PrepareInstallOptions::default(),
+                    )
+                    .await
+                    .unwrap();
+
+                let result = dlp
+                    .install(
+                        prep_result.response().unwrap().token(),
+                        &format!(
+                            "{}.{}.desktop",
+                            APP_ID,
+                            data.name.replace(' ', "-").to_lowercase()
+                        ),
+                        &data.get_output().unwrap(),
+                    )
+                    .await;
+
+                println!("{:?}", result);
             });
             klass.install_action("pick_icon", None, move |quick_mode, _, _| {
                 let imp = quick_mode.imp();

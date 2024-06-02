@@ -10,6 +10,7 @@ adw = { version = "0.5.2", package = "libadwaita", features = ["v1_4"] }
 gtk = { version = "0.7.2", package = "gtk4", features = ["v4_12"] }
 freedesktop_entry_parser = { version = "1.3.0" }
 anyhow = "1.0.75"
+ashpd = "0.8.1"
 
 [build-dependencies]
 glib-build-tools = "0.18.0"
