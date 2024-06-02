@@ -1,22 +1,20 @@
 mod imp {
     use std::cell::RefCell;
 
-    use std::path::{Path, PathBuf};
+    use std::path::Path;
 
-    use adw::subclass::prelude::NavigationPageImpl;
-    use adw::traits::BinExt;
-    use adw::traits::EntryRowExt;
-
+    use adw::{
+        prelude::{BinExt, EntryRowExt},
+        subclass::prelude::NavigationPageImpl,
+    };
+    use ashpd::desktop::dynamic_launcher::LauncherType;
     use ashpd::desktop::dynamic_launcher::{DynamicLauncherProxy, PrepareInstallOptions};
-    use ashpd::WindowIdentifier;
     use gtk::glib::subclass::InitializingObject;
     use gtk::glib::{self, Properties};
     use gtk::glib::{clone, closure};
-    use gtk::prelude::{
-        Cast, CastNone, FileExt, GObjectPropertyExpressionExt, ObjectExt, StaticType, ToVariant,
-    };
+    use gtk::prelude::{Cast, CastNone, EditableExt, FileExtManual, WidgetExt};
+    use gtk::prelude::{FileExt, GObjectPropertyExpressionExt, ObjectExt, StaticType, ToVariant};
     use gtk::subclass::prelude::*;
-    use gtk::traits::{EditableExt, WidgetExt};
     use gtk::{ClosureExpression, CompositeTemplate};
 
     use crate::model::Desktop;
@@ -50,61 +48,6 @@ mod imp {
         pub icon_preview: TemplateChild<adw::Bin>,
     }
 
-    #[gtk::template_callbacks]
-    impl QuickMode {
-        #[template_callback]
-        fn save(&self) {
-            // let data = self.data.borrow();
-            // let old_name_binding = self.old_name.borrow();
-            // let old_name = old_name_binding.as_ref();
-            //
-            // if !data.name.eq(old_name) {
-            //     let _ = std::fs::remove_file(self.get_file_path_from_name(old_name));
-            // }
-            //
-            // let target_dir = PathBuf::from(format!(
-            //     "/home/{}/.local/share/applications",
-            //     std::env::var("USER").unwrap()
-            // ));
-            //
-            // if !target_dir.exists() {
-            //     let _ = std::fs::create_dir_all(&target_dir);
-            // }
-            //
-            // let file_path = target_dir.join(format!(
-            //     "{}.desktop",
-            //     data.name.replace(' ', "-").to_lowercase()
-            // ));
-            //
-            // let mut file = File::create(file_path).expect("Could not create a new file");
-            // match file.write_all(
-            //     data.get_output()
-            //         .expect("Could not serialize desktop file for writing")
-            //         .as_bytes(),
-            // ) {
-            //     Ok(()) => {
-            //         let _ = self
-            //             .obj()
-            //             .activate_action("navigation.pop", Some(&"manage".to_variant()));
-            //     }
-            //     Err(e) => {
-            //         eprintln!(
-            //             "Could not save file because of the following error: \n {:#?}",
-            //             e
-            //         );
-            //     }
-            // }
-        }
-
-        fn get_file_path_from_name(&self, name: &str) -> PathBuf {
-            PathBuf::from(format!(
-                "/home/{}/.local/share/applications/{}.desktop",
-                std::env::var("USER").unwrap(),
-                name.replace(' ', "-").to_lowercase()
-            ))
-        }
-    }
-
     #[glib::object_subclass]
     impl ObjectSubclass for QuickMode {
         const NAME: &'static str = "QuickMode";
@@ -120,7 +63,6 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
-            klass.bind_template_callbacks();
 
             klass.install_action("pick_exec", None, move |quick_mode, _, _| {
                 let imp = quick_mode.imp();
@@ -165,24 +107,35 @@ mod imp {
                 );
             });
             klass.install_action_async("save", None, |quick_mode, _, _| async move {
-                let data = quick_mode.imp().data.borrow();
-                let identifier = WindowIdentifier::default();
-                let dlp = DynamicLauncherProxy::new().await.unwrap();
-                let icon = gtk::gio::File::for_path(&data.icon);
-                let (icon_data, _) = icon.load_contents_future().await.unwrap();
-                let prep_result = dlp
-                    .prepare_install(
-                        &identifier,
-                        &data.name,
-                        ashpd::desktop::Icon::Bytes(icon_data),
-                        PrepareInstallOptions::default(),
-                    )
+                let data = quick_mode.imp().data.take();
+                let identifier =
+                    ashpd::WindowIdentifier::from_native(&quick_mode.native().unwrap()).await;
+                let proxy = DynamicLauncherProxy::new().await.unwrap();
+                let (icon, _) = gtk::gio::File::for_path(&data.icon)
+                    .load_contents_future()
                     .await
                     .unwrap();
 
-                let result = dlp
+                let prep_resonse = proxy
+                    .prepare_install(
+                        &identifier,
+                        &data.name,
+                        ashpd::desktop::Icon::Bytes(icon.to_vec()),
+                        PrepareInstallOptions::default()
+                            .modal(true)
+                            .launcher_type(LauncherType::Application)
+                            .editable_name(false)
+                            .editable_icon(false),
+                    )
+                    .await
+                    .unwrap()
+                    .response();
+
+                let _result = proxy
                     .install(
-                        prep_result.response().unwrap().token(),
+                        prep_resonse
+                            .expect("No token provided by 'Prepare Install' call")
+                            .token(),
                         &format!(
                             "{}.{}.desktop",
                             APP_ID,
@@ -191,8 +144,6 @@ mod imp {
                         &data.get_output().unwrap(),
                     )
                     .await;
-
-                println!("{:?}", result);
             });
             klass.install_action("pick_icon", None, move |quick_mode, _, _| {
                 let imp = quick_mode.imp();
@@ -381,13 +332,13 @@ mod imp {
     impl NavigationPageImpl for QuickMode {}
 }
 
-use adw::traits::BinExt;
-use adw::traits::EntryRowExt;
+use adw::prelude::BinExt;
+use adw::prelude::EntryRowExt;
 use gtk::{
     glib::{self},
+    prelude::{EditableExt, WidgetExt},
     prelude::{ObjectExt, SettingsExtManual},
     subclass::prelude::ObjectSubclassIsExt,
-    traits::{EditableExt, WidgetExt},
 };
 
 glib::wrapper! {

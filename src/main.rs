@@ -3,6 +3,8 @@ mod function;
 mod model;
 mod view;
 
+use adw::prelude::FromVariant;
+use adw::prelude::StaticVariantType;
 use component::Menu;
 use gtk::{
     glib::{clone, VariantTy},
@@ -10,14 +12,12 @@ use gtk::{
         ActionMapExtManual, ApplicationExt, ApplicationExtManual, Cast, SettingsExt,
         SettingsExtManual, StaticType,
     },
-    traits::{GtkApplicationExt, GtkWindowExt},
+    prelude::{GtkApplicationExt, GtkWindowExt},
 };
 
-use adw::traits::AdwApplicationWindowExt;
-use adw::traits::ComboRowExt;
+use adw::prelude::AdwApplicationWindowExt;
+use adw::prelude::ComboRowExt;
 use gtk::glib;
-use gtk::glib::FromVariant;
-use gtk::glib::StaticVariantType;
 use view::{Manage, QuickMode};
 
 const APP_ID: &str = "io.github.andreibachim.shortcut";

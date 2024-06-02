@@ -3,9 +3,9 @@ mod imp {
     use adw::prelude::{GtkWindowExt, MessageDialogExt, MessageDialogExtManual, WidgetExt};
     use adw::subclass::prelude::NavigationPageImpl;
     use gtk::gio::Cancellable;
-    use gtk::glib::clone;
     use gtk::glib::subclass::InitializingObject;
-    use gtk::glib::FromVariant;
+    use gtk::glib::{clone, VariantType};
+    use gtk::prelude::FromVariant;
     use gtk::prelude::{CastNone, StaticType, ToVariant};
     use gtk::subclass::prelude::*;
     use gtk::{glib, CompositeTemplate};
@@ -43,49 +43,57 @@ mod imp {
             klass.bind_template();
             klass.bind_template_callbacks();
 
-            klass.install_action("delete", Some("(ss)"), |slf, _, param| {
-                let (path, name) = <(String, String)>::from_variant(param.unwrap()).unwrap();
-                let binding = slf.ancestor(gtk::Window::static_type());
-                let window = binding.and_dynamic_cast_ref::<gtk::Window>().unwrap();
+            klass.install_action(
+                "delete",
+                Some(&VariantType::from_string("(ss)").unwrap()),
+                |slf, _, param| {
+                    let (path, name) = <(String, String)>::from_variant(param.unwrap()).unwrap();
+                    let binding = slf.ancestor(gtk::Window::static_type());
+                    let window = binding.and_dynamic_cast_ref::<gtk::Window>().unwrap();
 
-                let confirm_dialog = adw::MessageDialog::builder()
-                    .heading("Delete")
-                    .body(format!(
-                        "Are you sure you want to delete the '{}' shortcut?",
-                        name
-                    ))
-                    .default_response("cancel")
-                    .close_response("cancel")
-                    .modal(true)
-                    .transient_for(window)
-                    .build();
+                    let confirm_dialog = adw::MessageDialog::builder()
+                        .heading("Delete")
+                        .body(format!(
+                            "Are you sure you want to delete the '{}' shortcut?",
+                            name
+                        ))
+                        .default_response("cancel")
+                        .close_response("cancel")
+                        .modal(true)
+                        .transient_for(window)
+                        .build();
 
-                confirm_dialog.add_responses(&[("cancel", "_Cancel"), ("delete", "_Delete")]);
+                    confirm_dialog.add_responses(&[("cancel", "_Cancel"), ("delete", "_Delete")]);
 
-                confirm_dialog
-                    .set_response_appearance("delete", adw::ResponseAppearance::Destructive);
+                    confirm_dialog
+                        .set_response_appearance("delete", adw::ResponseAppearance::Destructive);
 
-                confirm_dialog.present();
-                confirm_dialog.choose(
-                    Cancellable::NONE,
-                    clone!(@weak slf, @weak window => move |decision| {
-                        if decision.eq("delete") {
-                            match std::fs::remove_file(path) {
-                                Ok(()) => slf.load(false),
-                                Err(e) => {
-                                   let _ = window.activate_action("win.show_toast",
-                                       Some(&"Could not delete the shortcut".to_variant()));
-                                   eprintln!("Could not delete the shortcut: {:#?}", e);
-                                },
+                    confirm_dialog.present();
+                    confirm_dialog.choose(
+                        Cancellable::NONE,
+                        clone!(@weak slf, @weak window => move |decision| {
+                            if decision.eq("delete") {
+                                match std::fs::remove_file(path) {
+                                    Ok(()) => slf.load(false),
+                                    Err(e) => {
+                                       let _ = window.activate_action("win.show_toast",
+                                           Some(&"Could not delete the shortcut".to_variant()));
+                                       eprintln!("Could not delete the shortcut: {:#?}", e);
+                                    },
+                                }
                             }
-                        }
-                    }),
-                )
-            });
+                        }),
+                    )
+                },
+            );
 
-            klass.install_action("edit", Some("(sss)"), |slf, _, params| {
-                let _ = slf.activate_action("win.load_quick_mode", params);
-            });
+            klass.install_action(
+                "edit",
+                Some(&VariantType::from_string("(sss)").unwrap()),
+                |slf, _, params| {
+                    let _ = slf.activate_action("win.load_quick_mode", params);
+                },
+            );
 
             klass.install_action("reload_apps", None, |slf, _, _| {
                 slf.load(false);
@@ -114,6 +122,7 @@ use adw::prelude::EditableExt;
 use adw::prelude::WidgetExt;
 use freedesktop_entry_parser::parse_entry;
 use gtk::glib::clone;
+use gtk::glib::Propagation;
 use gtk::prelude::Cast;
 use gtk::{
     glib::{self},
@@ -131,7 +140,7 @@ impl Manage {
         let filter_entry = self.imp().filter_entry.get();
         let action = gtk::CallbackAction::new(|filter_entry, _| {
             filter_entry.grab_focus();
-            true
+            Propagation::Proceed
         });
         let trigger = gtk::ShortcutTrigger::parse_string("<ctrl>F").unwrap();
         let shortcut = gtk::Shortcut::builder()
