@@ -131,7 +131,7 @@ mod imp {
                     .unwrap()
                     .response();
 
-                let _result = proxy
+                let result = proxy
                     .install(
                         prep_resonse
                             .expect("No token provided by 'Prepare Install' call")
@@ -144,6 +144,18 @@ mod imp {
                         &data.get_output().unwrap(),
                     )
                     .await;
+
+                match result {
+                    Ok(_) => {
+                        let _ = quick_mode
+                            .activate_action("navigation.pop", Some(&"manage".to_variant()));
+                    }
+                    Err(e) => {
+                        eprint!("Could not create shortcut because of error {e}");
+                        let _ = quick_mode
+                            .activate_action("win.show_toast", Some(&"Hello".to_variant()));
+                    }
+                }
             });
             klass.install_action("pick_icon", None, move |quick_mode, _, _| {
                 let imp = quick_mode.imp();
