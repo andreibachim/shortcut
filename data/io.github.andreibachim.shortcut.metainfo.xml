@@ -12,14 +12,13 @@
       It guides users throught the process by providing file picker dialogs with relevant filters, input validation, and name and icon previews.
     </p>
   </description>
-  <provides>
-    <id>io.github.andreibachim.shortcut</id>
-  </provides>
   <launchable type="desktop-id">io.github.andreibachim.shortcut.desktop</launchable>
   <url type="homepage">https://github.com/andreibachim/shortcut</url>
   <url type="bugtracker">https://github.com/andreibachim/shortcut/issues</url>
-  <update_contact>Andrei Achim</update_contact>
-  <developer_name>Achim Andrei</developer_name>
+  <update_contact>andreiachim_AT_duck.com</update_contact>
+  <developer id="io.github.andreibachim">
+    <name>Andrei Achim</name>
+  </developer>
   <content_rating type="oars-1.1" />
   <screenshots>
     <screenshot type="default">
@@ -66,14 +65,14 @@
                 <p>Added a status view when filtering does not return any result, or no shortcuts have been
                 created using the app yet.
               </p>
-              <p>Limited access to only the desktop files created by <i>Shortcut</i>.</p>
+              <p>Limited access to only the desktop files created by Shortcut.</p>
             </description>
           </release>
           <release version="0.2.1" date="2023-09-14">
             <description>
               <p>Added 'Manage' mode to delete and edit shortcuts.</p>
               <p>Please note that shortcuts created by previous versions of the app need to be first 
-                saved from editing mode before they will be detected as <i>Shortcut</i> managed.</p>
+                saved from editing mode before they will be detected as Shortcut managed.</p>
             </description>
           </release>
           <release version="0.2.0" date="2023-09-14">
