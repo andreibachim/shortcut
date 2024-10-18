@@ -1,12 +1,12 @@
 mod imp {
 
-    use adw::prelude::{GtkWindowExt, MessageDialogExt, MessageDialogExtManual, WidgetExt};
+    use adw::prelude::{AdwDialogExt, AlertDialogExt, AlertDialogExtManual, WidgetExt};
     use adw::subclass::prelude::NavigationPageImpl;
     use gtk::gio::Cancellable;
     use gtk::glib::clone;
     use gtk::glib::subclass::InitializingObject;
-    use gtk::glib::FromVariant;
-    use gtk::prelude::{CastNone, StaticType, ToVariant};
+    use gtk::prelude::FromVariant;
+    use gtk::prelude::{CastNone, StaticType, StaticVariantType, ToVariant};
     use gtk::subclass::prelude::*;
     use gtk::{glib, CompositeTemplate};
 
@@ -43,49 +43,64 @@ mod imp {
             klass.bind_template();
             klass.bind_template_callbacks();
 
-            klass.install_action("delete", Some("(ss)"), |slf, _, param| {
-                let (path, name) = <(String, String)>::from_variant(param.unwrap()).unwrap();
-                let binding = slf.ancestor(gtk::Window::static_type());
-                let window = binding.and_dynamic_cast_ref::<gtk::Window>().unwrap();
+            klass.install_action(
+                "delete",
+                Some(&<(String, String)>::static_variant_type()),
+                |slf, _, param| {
+                    let (path, name) = <(String, String)>::from_variant(param.unwrap()).unwrap();
+                    let binding = slf.ancestor(gtk::Window::static_type());
+                    let window = binding.and_dynamic_cast_ref::<gtk::Window>().unwrap();
 
-                let confirm_dialog = adw::MessageDialog::builder()
-                    .heading("Delete")
-                    .body(format!(
-                        "Are you sure you want to delete the '{}' shortcut?",
-                        name
-                    ))
-                    .default_response("cancel")
-                    .close_response("cancel")
-                    .modal(true)
-                    .transient_for(window)
-                    .build();
+                    let confirm_dialog = adw::AlertDialog::builder()
+                        .heading("Delete")
+                        .body(format!(
+                            "Are you sure you want to delete the '{}' shortcut?",
+                            name
+                        ))
+                        .default_response("cancel")
+                        .close_response("cancel")
+                        .build();
 
-                confirm_dialog.add_responses(&[("cancel", "_Cancel"), ("delete", "_Delete")]);
+                    confirm_dialog.add_responses(&[("cancel", "_Cancel"), ("delete", "_Delete")]);
+                    confirm_dialog
+                        .set_response_appearance("delete", adw::ResponseAppearance::Destructive);
 
-                confirm_dialog
-                    .set_response_appearance("delete", adw::ResponseAppearance::Destructive);
+                    confirm_dialog.present(Some(slf));
 
-                confirm_dialog.present();
-                confirm_dialog.choose(
-                    Cancellable::NONE,
-                    clone!(@weak slf, @weak window => move |decision| {
-                        if decision.eq("delete") {
-                            match std::fs::remove_file(path) {
-                                Ok(()) => slf.load(false),
-                                Err(e) => {
-                                   let _ = window.activate_action("win.show_toast",
-                                       Some(&"Could not delete the shortcut".to_variant()));
-                                   eprintln!("Could not delete the shortcut: {:#?}", e);
-                                },
+                    confirm_dialog.choose(
+                        window,
+                        Cancellable::NONE,
+                        clone!(
+                            #[weak]
+                            slf,
+                            #[weak]
+                            window,
+                            move |decision| {
+                                if decision.eq("delete") {
+                                    match std::fs::remove_file(path) {
+                                        Ok(()) => slf.load(false),
+                                        Err(e) => {
+                                            let _ = window.activate_action(
+                                                "win.show_toast",
+                                                Some(&"Could not delete the shortcut".to_variant()),
+                                            );
+                                            eprintln!("Could not delete the shortcut: {:#?}", e);
+                                        }
+                                    }
+                                }
                             }
-                        }
-                    }),
-                )
-            });
+                        ),
+                    )
+                },
+            );
 
-            klass.install_action("edit", Some("(sss)"), |slf, _, params| {
-                let _ = slf.activate_action("win.load_quick_mode", params);
-            });
+            klass.install_action(
+                "edit",
+                Some(&<(String, String, String)>::static_variant_type()),
+                |slf, _, params| {
+                    let _ = slf.activate_action("win.load_quick_mode", params);
+                },
+            );
 
             klass.install_action("reload_apps", None, |slf, _, _| {
                 slf.load(false);
@@ -131,7 +146,7 @@ impl Manage {
         let filter_entry = self.imp().filter_entry.get();
         let action = gtk::CallbackAction::new(|filter_entry, _| {
             filter_entry.grab_focus();
-            true
+            true.into()
         });
         let trigger = gtk::ShortcutTrigger::parse_string("<ctrl>F").unwrap();
         let shortcut = gtk::Shortcut::builder()
@@ -145,12 +160,16 @@ impl Manage {
         filter_entry.add_controller(shortcut_controller);
 
         let app_list = self.imp().app_list.get();
-        self.imp().filter_entry.connect_changed(
-            clone!(@weak app_list, @weak self as slf => move |filter_entry| {
+        self.imp().filter_entry.connect_changed(clone!(
+            #[weak]
+            app_list,
+            #[weak(rename_to = slf)]
+            self,
+            move |filter_entry| {
                 let filter_criteria = filter_entry.text();
                 slf.filter(app_list, &filter_criteria)
-            }),
-        );
+            }
+        ));
     }
 
     fn filter(&self, app_list: gtk::ListBox, filter_criteria: &str) {

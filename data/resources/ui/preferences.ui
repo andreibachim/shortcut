@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <object class="AdwPreferencesWindow" id="preferences">
-    <property name="modal">True</property>
+  <object class="AdwPreferencesDialog" id="preferences">
     <child>
       <object class="AdwPreferencesPage">
         <child>

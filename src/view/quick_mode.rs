@@ -4,9 +4,9 @@ mod imp {
     use std::io::Write;
     use std::path::{Path, PathBuf};
 
+    use adw::prelude::BinExt;
+    use adw::prelude::EntryRowExt;
     use adw::subclass::prelude::NavigationPageImpl;
-    use adw::traits::BinExt;
-    use adw::traits::EntryRowExt;
 
     use gtk::glib::subclass::InitializingObject;
     use gtk::glib::{self, Properties};
@@ -14,8 +14,8 @@ mod imp {
     use gtk::prelude::{
         Cast, CastNone, FileExt, GObjectPropertyExpressionExt, ObjectExt, StaticType, ToVariant,
     };
+    use gtk::prelude::{EditableExt, WidgetExt};
     use gtk::subclass::prelude::*;
-    use gtk::traits::{EditableExt, WidgetExt};
     use gtk::{ClosureExpression, CompositeTemplate};
 
     use crate::model::Desktop;
@@ -149,17 +149,21 @@ mod imp {
                 dialog.open(
                     Some(&main_window),
                     None::<&gtk::gio::Cancellable>,
-                    clone!(@weak imp => move |file| {
-                        if let Ok(file) = file {
-                            imp.exec_input.set_text(
-                                file.path()
-                                .expect("Invalid file path")
-                                .to_str()
-                                .expect("Path is not UTF-8 compliant"),
-                            );
-                            imp.exec_input.emit_by_name::<()>("apply", &[]);
+                    clone!(
+                        #[weak]
+                        imp,
+                        move |file| {
+                            if let Ok(file) = file {
+                                imp.exec_input.set_text(
+                                    file.path()
+                                        .expect("Invalid file path")
+                                        .to_str()
+                                        .expect("Path is not UTF-8 compliant"),
+                                );
+                                imp.exec_input.emit_by_name::<()>("apply", &[]);
+                            }
                         }
-                    }),
+                    ),
                 );
             });
             klass.install_action("pick_icon", None, move |quick_mode, _, _| {
@@ -187,17 +191,21 @@ mod imp {
                 file_dialog.open(
                     Some(&main_window),
                     None::<&gtk::gio::Cancellable>,
-                    clone!(@weak imp => move |file| {
-                        if let Ok(file) = file {
-                            imp.icon_input.set_text(
-                                file.path()
-                                .expect("Could not extract path from file")
-                                .to_str()
-                                .expect("Path is not UTF-8 compliant"),
-                            );
-                            imp.icon_input.emit_by_name::<()>("apply", &[]);
+                    clone!(
+                        #[weak]
+                        imp,
+                        move |file| {
+                            if let Ok(file) = file {
+                                imp.icon_input.set_text(
+                                    file.path()
+                                        .expect("Could not extract path from file")
+                                        .to_str()
+                                        .expect("Path is not UTF-8 compliant"),
+                                );
+                                imp.icon_input.emit_by_name::<()>("apply", &[]);
+                            }
                         }
-                    }),
+                    ),
                 );
             });
         }
@@ -261,39 +269,44 @@ mod imp {
             entry_row.grab_focus();
         };
 
-        slf.exec_input
-            .connect_apply(clone!(@weak slf => move |entry_row| {
+        slf.exec_input.connect_apply(clone!(
+            #[weak]
+            slf,
+            move |entry_row| {
                 let text = entry_row.text();
                 let path = Path::new(&text);
                 let validate_form = *slf.enable_validation.borrow();
 
                 if text.is_empty() {
                     show_error("The executable path is empty", entry_row);
-                    return
+                    return;
                 }
 
                 if !path.is_absolute() && validate_form {
                     show_error("Only absolute file paths are allowed", entry_row);
-                    return
+                    return;
                 }
 
                 if !path.exists() && validate_form {
                     show_error("The executable file does not exist", entry_row);
-                    return
+                    return;
                 }
 
                 if !path.is_file() && validate_form {
                     show_error("The selected file is a directory", entry_row);
-                    return
+                    return;
                 }
 
                 entry_row.set_css_classes(&[]);
                 slf.obj().set_exec(text);
                 slf.save_button.grab_focus();
-            }));
+            }
+        ));
 
-        slf.icon_input
-            .connect_apply(clone!(@weak slf => move |entry_row| {
+        slf.icon_input.connect_apply(clone!(
+            #[weak]
+            slf,
+            move |entry_row| {
                 let text = entry_row.text();
                 let path = Path::new(&text);
 
@@ -301,30 +314,35 @@ mod imp {
 
                 if text.is_empty() {
                     show_error("The icon path is empty", entry_row);
-                    return
+                    return;
                 }
 
                 if !path.is_absolute() && validate_form {
                     show_error("Only absolute file paths are allowed", entry_row);
-                    return
+                    return;
                 }
 
                 if !path.exists() && validate_form {
                     show_error("The icon file does not exist", entry_row);
-                    return
+                    return;
                 }
 
                 if !path.is_file() && validate_form {
                     show_error("The selected file is a directory", entry_row);
-                    return
+                    return;
                 }
 
                 entry_row.set_css_classes(&[]);
-                let image = slf.icon_preview.child().and_dynamic_cast::<gtk::Image>().unwrap();
+                let image = slf
+                    .icon_preview
+                    .child()
+                    .and_dynamic_cast::<gtk::Image>()
+                    .unwrap();
                 image.set_from_file(Some(&text));
                 slf.obj().set_icon(text);
                 slf.exec_input.grab_focus();
-            }));
+            }
+        ));
 
         let name_expression = slf.obj().property_expression("name");
         let exec_expression = slf.obj().property_expression("exec");
@@ -349,13 +367,13 @@ mod imp {
     impl NavigationPageImpl for QuickMode {}
 }
 
-use adw::traits::BinExt;
-use adw::traits::EntryRowExt;
+use adw::prelude::BinExt;
+use adw::prelude::EntryRowExt;
 use gtk::{
     glib::{self},
+    prelude::{EditableExt, WidgetExt},
     prelude::{ObjectExt, SettingsExtManual},
     subclass::prelude::ObjectSubclassIsExt,
-    traits::{EditableExt, WidgetExt},
 };
 
 glib::wrapper! {

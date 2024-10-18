@@ -18,7 +18,7 @@ pub fn set_icon(
         } else {
             let themed_icon = gtk::gio::ThemedIcon::from_names(&[icon_path]);
             if gtk::IconTheme::default().has_gicon(&themed_icon) {
-                image.set_gicon(Some(&themed_icon));
+                image.set_from_gicon(&themed_icon);
             } else {
                 return Err(anyhow!("The relative path does not point to any icon"));
             }
@@ -33,5 +33,5 @@ pub fn set_icon(
 
 fn set_placeholder_icon(image: &gtk::Image) {
     let themed_icon = gtk::gio::ThemedIcon::from_names(&["application-x-executable"]);
-    image.set_gicon(Some(&themed_icon));
+    image.set_from_gicon(&themed_icon);
 }

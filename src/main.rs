@@ -7,17 +7,16 @@ use component::Menu;
 use gtk::{
     glib::{clone, VariantTy},
     prelude::{
-        ActionMapExtManual, ApplicationExt, ApplicationExtManual, Cast, SettingsExt,
-        SettingsExtManual, StaticType,
+        ActionMapExtManual, ApplicationExt, ApplicationExtManual, Cast, GtkApplicationExt,
+        GtkWindowExt, SettingsExt, SettingsExtManual, StaticType,
     },
-    traits::{GtkApplicationExt, GtkWindowExt},
 };
 
-use adw::traits::AdwApplicationWindowExt;
-use adw::traits::ComboRowExt;
+use crate::glib::variant::FromVariant;
+use crate::glib::variant::StaticVariantType;
+use adw::prelude::ComboRowExt;
+use adw::{prelude::AdwApplicationWindowExt, prelude::AdwDialogExt};
 use gtk::glib;
-use gtk::glib::FromVariant;
-use gtk::glib::StaticVariantType;
 use view::{Manage, QuickMode};
 
 const APP_ID: &str = "io.github.andreibachim.shortcut";
@@ -68,15 +67,22 @@ fn build_content(window: &adw::ApplicationWindow) -> impl gtk::prelude::IsA<gtk:
 fn setup_nav_actions(window: &adw::ApplicationWindow, nav_view: &adw::NavigationView) {
     let load_quick_mode = gtk::gio::ActionEntry::builder("load_quick_mode")
         .parameter_type(Some(&<(String, String, String)>::static_variant_type()))
-        .activate(clone!(@weak nav_view => move |_, _, params| {
-            let (name, icon_path, exec_path) =
-                <(String, String, String)>::from_variant(params.unwrap()).unwrap();
-            let quick_mode_page = nav_view.find_page("quick_mode").unwrap()
-                .dynamic_cast::<crate::view::QuickMode>().unwrap();
-            quick_mode_page.clear_data();
-            quick_mode_page.edit_details(Some(name), Some(icon_path), Some(exec_path));
-            nav_view.push_by_tag("quick_mode");
-        }))
+        .activate(clone!(
+            #[weak]
+            nav_view,
+            move |_, _, params| {
+                let (name, icon_path, exec_path) =
+                    <(String, String, String)>::from_variant(params.unwrap()).unwrap();
+                let quick_mode_page = nav_view
+                    .find_page("quick_mode")
+                    .unwrap()
+                    .dynamic_cast::<crate::view::QuickMode>()
+                    .unwrap();
+                quick_mode_page.clear_data();
+                quick_mode_page.edit_details(Some(name), Some(icon_path), Some(exec_path));
+                nav_view.push_by_tag("quick_mode");
+            }
+        ))
         .build();
 
     window.add_action_entries([load_quick_mode]);
@@ -134,17 +140,16 @@ fn setup_actions(app: &adw::Application) {
                 set_color_scheme(selected);
             });
 
-            let preferences_window: adw::PreferencesWindow =
+            let preferences_dialog: adw::PreferencesDialog =
                 preferences_builder.object("preferences").unwrap();
-            preferences_window.set_transient_for(app.active_window().as_ref());
-            preferences_window.present();
+            preferences_dialog.present(app.active_window().as_ref());
         })
         .build();
 
     let about = gtk::gio::ActionEntry::builder("about")
         .activate(|app: &adw::Application, _, _| {
             let window = app.active_window().unwrap();
-            adw::AboutWindow::builder()
+            adw::AboutDialog::builder()
                 .application_name("Shortcut")
                 .application_icon(APP_ID)
                 .website("https://github.com/andreibachim/shortcut")
@@ -153,10 +158,8 @@ fn setup_actions(app: &adw::Application) {
                 .developers(["Andrei Achim <andreiachim@duck.com>"])
                 .license_type(gtk::License::Gpl30)
                 .copyright("© 2023 Andrei Achim")
-                .modal(true)
-                .transient_for(&window)
                 .build()
-                .present();
+                .present(Some(&window));
         })
         .build();
 
