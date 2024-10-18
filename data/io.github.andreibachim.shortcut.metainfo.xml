@@ -44,6 +44,11 @@
             </screenshot>
           </screenshots>
           <releases>
+            <release version="0.4.1" date="2024-10-18">
+              <description>
+                <p>1. Update GTK and Libadwaita dependencies</p>
+              </description>
+            </release>
             <release version="0.4.0" date="2023-10-10">
               <description>
                 <p>1. Implemented new navigation system, more in line with modern GNOME apps.</p>

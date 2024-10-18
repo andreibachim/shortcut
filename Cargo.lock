@@ -587,7 +587,7 @@ dependencies = [
 
 [[package]]
 name = "shortcut"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "anyhow",
  "freedesktop_entry_parser",
