@@ -36,8 +36,8 @@ fn build_window(app: &adw::Application) {
 
     let window = adw::ApplicationWindow::builder()
         .application(app)
-        .default_width(650)
-        .default_height(785)
+        .default_width(1000)
+        .default_height(700)
         .icon_name(APP_ID)
         .title("Shortcut")
         .build();
