@@ -157,7 +157,7 @@ fn setup_actions(app: &adw::Application) {
                 .version(env!("CARGO_PKG_VERSION"))
                 .developers(["Andrei Achim <andreiachim@duck.com>"])
                 .license_type(gtk::License::Gpl30)
-                .copyright("© 2023 Andrei Achim")
+                .copyright("© 2025 Andrei Achim")
                 .build()
                 .present(Some(&window));
         })
