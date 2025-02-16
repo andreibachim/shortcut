@@ -5,7 +5,7 @@ mod imp {
     use gtk::gio::Cancellable;
     use gtk::glib::clone;
     use gtk::glib::subclass::InitializingObject;
-    use gtk::prelude::FromVariant;
+use gtk::prelude::FromVariant;
     use gtk::prelude::{CastNone, StaticType, StaticVariantType, ToVariant};
     use gtk::subclass::prelude::*;
     use gtk::{glib, CompositeTemplate};
@@ -249,11 +249,25 @@ impl Manage {
                 })
                 .for_each(|(dir_entry, desktop)| {
                     let section = desktop.section("Desktop Entry");
+                    let exec = section.attr("Exec").map(|path| {
+                        let path = if path.starts_with('"') {
+                            &path[1..]
+                        } else {
+                            path
+                        };
+
+                        let path = if path.ends_with('"') {
+                            &path[..path.len()-1]
+                        } else {
+                            path
+                        };
+                        path
+                    });
                     let entry = crate::component::Entry::new(
                         section.attr("Name"),
                         dir_entry.path().to_str(),
                         section.attr("Icon"),
-                        section.attr("Exec"),
+                        exec,
                     );
                     imp.app_list.append(&entry);
                 });

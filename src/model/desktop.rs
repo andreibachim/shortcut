@@ -22,7 +22,7 @@ impl Desktop {
         writeln!(&mut output, "[Desktop Entry]")?;
         writeln!(&mut output, "Type={}", self.r#type)?;
         writeln!(&mut output, "Name={}", self.name)?;
-        writeln!(&mut output, "Exec={}", self.exec)?;
+        writeln!(&mut output, "Exec=\"{}\"", self.exec)?;
         writeln!(&mut output, "Icon={}", self.icon)?;
         writeln!(&mut output, "X-Shortcut-App=true")?;
 
