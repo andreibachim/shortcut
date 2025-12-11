@@ -21,7 +21,7 @@ use view::{Manage, QuickMode};
 
 const APP_ID: &str = "io.github.andreibachim.shortcut";
 
-fn main() -> gtk::glib::ExitCode {
+fn main() -> glib::ExitCode {
     gtk::gio::resources_register_include!("shortcut.gresource").expect("Could not load resources");
 
     let app = adw::Application::builder().application_id(APP_ID).build();
@@ -36,8 +36,8 @@ fn build_window(app: &adw::Application) {
 
     let window = adw::ApplicationWindow::builder()
         .application(app)
-        .default_width(1000)
-        .default_height(700)
+        .default_width(650)
+        .default_height(785)
         .icon_name(APP_ID)
         .title("Shortcut")
         .build();
@@ -165,13 +165,12 @@ fn setup_actions(app: &adw::Application) {
 
     let keyboard_shortcuts = gtk::gio::ActionEntry::builder("shortcuts")
         .activate(|app: &adw::Application, _, _| {
-            let shortcut_window: gtk::ShortcutsWindow = gtk::Builder::from_resource(
+            let shortcut_window: adw::ShortcutsDialog = gtk::Builder::from_resource(
                 "/io/github/andreibachim/shortcut/keyboard_shortcuts.ui",
             )
             .object("keyboard_shortcuts")
             .unwrap();
-            shortcut_window.set_transient_for(app.active_window().as_ref());
-            shortcut_window.present();
+            shortcut_window.present(app.active_window().as_ref());
         })
         .build();
 

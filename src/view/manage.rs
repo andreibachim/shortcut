@@ -68,7 +68,7 @@ use gtk::prelude::FromVariant;
                     confirm_dialog.present(Some(slf));
 
                     confirm_dialog.choose(
-                        window,
+                        Some(window),
                         Cancellable::NONE,
                         clone!(
                             #[weak]
@@ -137,7 +137,7 @@ use gtk::{
 
 glib::wrapper! {
     pub struct Manage(ObjectSubclass<imp::Manage>)
-    @extends gtk::Box, gtk::Widget,
+    @extends gtk::Box, adw::NavigationPage, gtk::Widget,
     @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
 }
 

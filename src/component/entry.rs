@@ -50,7 +50,7 @@ use gtk::{
 
 glib::wrapper! {
     pub struct Entry(ObjectSubclass<imp::Entry>)
-        @extends adw::PreferencesRow, gtk::Widget,
+        @extends adw::PreferencesRow, gtk::ListBoxRow, gtk::Widget,
         @implements gtk::Accessible, gtk::Actionable, gtk::Buildable, gtk::ConstraintTarget;
 }
 

@@ -1,75 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <object class="GtkShortcutsWindow" id="keyboard_shortcuts">
-    <property name="modal">True</property>
-    <child>
-      <object class="GtkShortcutsSection">
-        <property name="section-name">shortcuts</property>
-        <property name="max-height">8</property>
+    <object class="AdwShortcutsDialog" id="keyboard_shortcuts">
         <child>
-          <object class="GtkShortcutsGroup">
-            <property name="title">General</property>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title">Preferences</property>
-                <property name="accelerator">&lt;ctrl&gt;comma</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title">Keyboard shortcuts</property>
-                <property name="accelerator">&lt;ctrl&gt;question</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title">Close</property>
-                <property name="accelerator">&lt;ctrl&gt;Q</property>
-              </object>
-            </child>
-          </object>
+            <object class="AdwShortcutsSection">
+                <property name="title">General</property>
+                <child>
+                    <object class="AdwShortcutsItem">
+                        <property name="title">Preferences</property>
+                        <property name="accelerator">&lt;ctrl&gt;comma</property>
+                    </object>
+                </child>
+                <child>
+                    <object class="AdwShortcutsItem">
+                        <property name="title">Keyboard shortcuts</property>
+                        <property name="accelerator">&lt;ctrl&gt;question</property>
+                    </object>
+                </child>
+                <child>
+                    <object class="AdwShortcutsItem">
+                        <property name="title">Close</property>
+                        <property name="accelerator">&lt;ctrl&gt;Q</property>
+                    </object>
+                </child>
+            </object>
         </child>
         <child>
-          <object class="GtkShortcutsGroup">
-            <property name="title">Shortcuts list</property>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title">New</property>
-                <property name="accelerator">&lt;ctrl&gt;n</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title">Reload</property>
-                <property name="accelerator">&lt;ctrl&gt;r</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title">Search</property>
-                <property name="accelerator">&lt;ctrl&gt;f</property>
-              </object>
-            </child>
-          </object>
+            <object class="AdwShortcutsSection">
+                <property name="title">Shortcuts list</property>
+                <child>
+                    <object class="AdwShortcutsItem">
+                        <property name="title">New</property>
+                        <property name="accelerator">&lt;ctrl&gt;n</property>
+                    </object>
+                </child>
+                <child>
+                    <object class="AdwShortcutsItem">
+                        <property name="title">Reload</property>
+                        <property name="accelerator">&lt;ctrl&gt;r</property>
+                    </object>
+                </child>
+                <child>
+                    <object class="AdwShortcutsItem">
+                        <property name="title">Search</property>
+                        <property name="accelerator">&lt;ctrl&gt;f</property>
+                    </object>
+                </child>
+            </object>
         </child>
         <child>
-          <object class="GtkShortcutsGroup">
-            <property name="title">Create</property>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title">Save</property>
-                <property name="accelerator">&lt;alt&gt;s</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title">Back</property>
-                <property name="accelerator">BackSpace</property>
-              </object>
-            </child>
-          </object>
+            <object class="AdwShortcutsSection">
+                <property name="title">Create</property>
+                <child>
+                    <object class="AdwShortcutsItem">
+                        <property name="title">Save</property>
+                        <property name="accelerator">&lt;alt&gt;s</property>
+                    </object>
+                </child>
+                <child>
+                    <object class="AdwShortcutsItem">
+                        <property name="title">Back</property>
+                        <property name="accelerator">BackSpace</property>
+                    </object>
+                </child>
+            </object>
         </child>
-      </object>
-    </child>
-  </object>
+    </object>
 </interface>
